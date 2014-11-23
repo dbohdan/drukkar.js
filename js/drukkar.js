@@ -28,7 +28,6 @@
             return Backbone.Model.prototype.fetch.call(this, options);
         }
     });
-    //var Config = Backbone.Model.extend({});
 
     var PostCollection = Backbone.Collection.extend({
         model: Post,
@@ -44,7 +43,7 @@
             var that = this;
             this.on("change", function(post) {
                 if (that.size() === that.updateCounter) {
-                    that.trigger("updated");
+                    that.trigger("update");
                 }
             });
         },
@@ -62,7 +61,6 @@
                 post.fetch();
                 return post;
             });
-            debug(parsed);
             return parsed;
         },
 
@@ -76,28 +74,36 @@
     var PostView = Backbone.View.extend({
         model: Post,
 
+        config: null,
+
         template: _.template(document.querySelector("#post_template").textContent),
 
         render: function() {
-            this.el.innerHTML = this.template(this.model.attributes);
+            this.el.innerHTML = this.template(
+                _.extend(_.clone(this.model.attributes),
+                        {config: this.config.attributes})
+            );
             return this;
         }
+    });
+
+    var Config = Backbone.Model.extend({
+        urlRoot: '/',
+
+        url: 'drukkar.json',
     });
 
     var PageView = Backbone.View.extend({
         el: "body",
 
-        config: {
-            version: "0.0.1"
-        },
+        config: null,
 
         initialize: function() {
             this.collection = new PostCollection();
-            this.render();
         },
 
         render: function() {
-            this.el.innerHTML = this.template(this.config);
+            this.el.innerHTML = this.template({config: this.config.attributes});
             this.collection.each(function(item) {
                 this.renderPost(item);
             }, this);
@@ -107,6 +113,7 @@
             var post_view = new PostView({
                 model: item
             });
+            post_view.config = this.config;
             this.el.querySelector("#content").appendChild(post_view.render().el);
         },
 
@@ -116,11 +123,16 @@
     var BlogRouter = Backbone.Router.extend({});
 
     // Backbone.history.start();
-
-    var page = new PageView();
-    page.collection.url = '/entries/postlist.txt';
-    page.collection.fetch();
-    page.collection.on("updated", function() {
-        page.render();
-    })
+    var config = new Config();
+    config.on("sync", function() {
+        var page = new PageView();
+        page.config = config;
+        config.set({version: "0.0.1"});
+        page.collection.url = '/entries/postlist.txt';
+        page.collection.fetch();
+        page.collection.on("update", function() {
+            page.render();
+        })
+    });
+    config.fetch();
 })();

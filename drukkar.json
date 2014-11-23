@@ -1,0 +1,22 @@
+{
+  "base_location": "/",
+  "entries_dir": "entries/",
+  "files_dir": "files/",
+
+  "title": "Blog title here",
+  "subtitle": "Blog subtitle here",
+
+  "theme": "flat",
+  "entries_per_page": 10,
+  "entries_per_page_for_tags_and_search": 999,
+
+  "locale": "en",
+  "date_format": "DD/MM/YYYY HH:mm:ss",
+  "entry_date_from_file_name": false,
+
+  "search_enabled": true,
+  "navbar_enabled": true,
+  "sidebar_enabled": true,
+  "show_dates": true,
+  "time_zone": "UTC"
+}
