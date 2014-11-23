@@ -1,0 +1,211 @@
+body {
+    color: black;
+    background-color: #f5f5f5;
+    font-family: Georgia, serif;
+    font-size: 12pt;
+}
+
+#container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 800px;
+}
+
+.blogentry {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #999999;
+}
+
+.text {
+    text-indent: 2.5em;
+}
+
+li {
+    text-indent: 0em;
+}
+
+#header {
+    width: 800px;
+    border: 1px solid #999999;
+    background-color: #ffffff;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 5px;
+}
+
+h1#title {
+    text-align: center;
+    font-weight: bold;
+}
+
+h2 {
+    text-indent: 0px;
+    font-weight: bold;
+}
+
+h2.entrytitle {
+}
+
+h3 {
+    text-indent: 0px;
+    font-weight: bold;
+}
+
+h4 {
+    text-indent: 0px;
+ /* font-size: 125%; */
+    font-weight: bold;
+}
+
+h2#subtitle {
+    text-align: center;
+    padding: 5px;
+}
+
+#search {
+    width: 800px;
+/*    padding-top: 5px;*/
+    padding-bottom: 5px;
+}
+
+#searchform {
+    width: 700px;
+    text-align: center;
+    border: 1px solid #999999;
+    background-color: #ffffff;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#content {
+    width: 800px;
+    border: 1px solid #999999;
+    background-color: #ffffff;
+    padding: 10px;
+    line-height: 150%;
+}
+
+#sidebar {
+    margin-bottom: 5px;
+    width: 800px;
+    border: 1px solid #999999;
+    background-color: #ffffff;
+    padding: 10px;
+    line-height: 150%;
+}
+
+#navbar {
+    margin-bottom: 5px;
+    width: 800px;
+    border: 1px solid #999999;
+    background-color: #ffffff;
+    padding: 10px;
+    line-height: 150%;
+}
+
+#navbar a {
+    margin-right: 20px;
+}
+
+#pagelinks {
+    min-height: 13pt;
+}
+
+#footer {
+    text-align: center;
+    padding-top: 5px;
+    font-size: 75%;
+}
+
+pre.source {
+    overflow: auto;
+    white-space: pre-wrap;                  /* CSS 3 browsers  */
+    white-space: -moz-pre-wrap !important; /* 1999+ Mozilla  */
+    white-space: -pre-wrap;                 /* Opera 4-6 */
+    white-space: -o-pre-wrap;               /* Opera 7+ */
+    word-wrap: break-word;                  /* IE 5.5+ */
+    width: 760px;
+}
+
+ol.source {
+    overflow: auto;
+    white-space: pre-wrap;                  /* CSS 3 browsers  */
+    white-space: -moz-pre-wrap !important; /* 1999+ Mozilla  */
+    white-space: -pre-wrap;                 /* Opera 4-6 */
+    white-space: -o-pre-wrap;               /* Opera 7+ */
+    word-wrap: break-word;                  /* IE 5.5+ */
+    width: 760px;
+    font-family: monospace;
+}
+
+.evenline {
+    background-color: #f0f0f0;
+    padding-left: 0.5em;
+}
+
+.oddline {
+    background-color: #ffffff;
+    padding-left: 0.5em;
+}
+
+.linenumber {
+    float: left;
+    font-size: 85%;
+    color: #333333;
+}
+
+#footer {
+    text-align: center;
+    padding-top: 5px;
+    font-size: 75%;
+}
+
+a {
+    text-decoration: none;
+    color: #0000FF;
+}
+
+a:hover {
+    color: #000066;
+}
+
+a:active {
+    color: red;
+}
+
+a:visited {
+    color: #581C90;
+}
+
+a#prevpagelink {
+    float: left;
+}
+
+a#nextpagelink {
+    float: right;
+}
+
+#adminpagelinks {
+    text-align: right;
+}
+
+a#logout {
+    float: right;
+}
+
+a.titlelink {
+    color: black;
+}
+
+span.error {
+    color: red;
+}
+
+span.actionbuttons {
+    float: right;
+}

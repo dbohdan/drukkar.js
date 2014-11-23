@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>The official Drukkar blog</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="themes/flat/blog.css">
+</head>
+<body>
+    <script type="text/template" id="post_template">
+        <div class="blogentry">
+            <h2 class="entrytitle"><a class="titlelink" href=""><%= title %></a></h2>
+            <div class="text">
+            <% if (format === "text") { %>
+                <%- text %>
+            <% } else if (format === "html") { %>
+                <%= text %>
+            <% } else if (format === "markdown") { %>
+                <%= marked(text) %>
+            <% } %>
+            </div><!-- .text -->
+            <p class="files"><%= files.join(', ') %></p>
+            <p class="tags">Tags: <%= tags.join(', ') %></p>
+        </div><!-- .blogentry -->
+    </script>
+    <script type="text/template" id="container_template">
+        <div id="container">
+        <div id="header"><h1 id="title"><a id="blogtitle" href="/">The official Drukkar blog</a></h1></div><!-- #header -->
+                <div id="navbar">
+                    <a href="/">Home</a>
+                    <a href="/index.php?post=1-manual">Manual</a>
+                    <a href="/index.php?post=0-changelog">Changelog</a>
+                </div><!-- #navbar -->
+        <div id="search"><form action="index.php"><div id="searchform"><input type="text" name="search" id="searchfield" size=50>&nbsp;<input type="submit" class="button" id="searchbutton" value="Search"></div><!-- #searchform --></form></div><!-- #search -->
+        <div id="sidebar">
+            <h2>This is your sidebar</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean convallis
+            nibh id ligula placerat, ut rutrum nibh adipiscing.</p>
+        </div><!-- #sidebar -->
+        <div id="content">
+        </div><!-- #content -->
+        <div id="footer">Powered by <a href="http://drukkar.sourceforge.net/">Drukkar.js</a> <%= version %><!-- &nbsp;~&nbsp;<a href="rss.php">RSS</a> --></div><!-- #footer -->
+        </div><!-- #container -->
+    </script>
+    <script type="text/javascript" src="bower_components/underscore/underscore.js"></script>
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/backbone/backbone.js"></script>
+    <script type="text/javascript" src="bower_components/marked/lib/marked.js"></script>
+    <script type="text/javascript" src="js/drukkar.js"></script>
+</body>
+</html>

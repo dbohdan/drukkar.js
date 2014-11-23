@@ -1,0 +1,6 @@
+Options -Indexes
+
+<FilesMatch "\.xml$">
+order allow,deny
+deny from all
+</FilesMatch>

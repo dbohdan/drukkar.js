@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry>
+<format>markdown</format>
+<title>Welcome to Drukkar</title>
+<text>If &lt;b&gt;you&lt;/b&gt; can see this your fresh installation of Drukkar was able to run and read an XML file.
+
+Blah blah.
+
+It's a good start but don't forget to configure it right. See the mini-manual on [drukkar.sourceforge.net](http://drukkar.sourceforge.net/) for more information.</text>
+<date>1389443722</date>
+<file>f1.ext</file><file>f2.ext</file>
+<tag>sample entry</tag><tag>another tag</tag>
+</entry>

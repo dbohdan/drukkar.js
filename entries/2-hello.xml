@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry>
+<format>markdown</format>
+<title>Welcome</title>
+<text>Drukkar is a small blogging software program and CMS made with the following in mind:
+
+* minimum page overhead &amp;mdash; the content should account for most of your web
+traffic
+* working without a database 
+* ease of releasing files with your posts
+
+Each blog entry (post) is stored as a separate XML file in a directory. The clean, compact and correct HTML 4.01 Strict that Drukkar generates is well-suited for projects accessed over slow connections like GSM networks, modems or Tor. 
+
+Example uses of the file posting feature include:
+
+* a game developer posting alpha versions of his or her game
+* a government organization releasing forms and other documentation to the public — this is what Drukkar was initially developed for
+
+The fact that Drukkar uses XML files to store its blog entries and configuration is either a big strength or a weakness depending on your needs. It is easy to set up on any server with PHP 5, including in a  user's `public_html` directory, however, Drukkar may not easily scale beyond a certain number of hits per day without external caching.
+
+**Visit our [SourceForge project page](https://sourceforge.net/projects/drukkar/) for downloads** and contacts, **[browse the code on GitHub](https://github.com/dbohdan/drukkar)** or **read the manual below** to get a taste of what it is like to work with Drukkar. This blog is powered by Drukkar.
+
+The name &quot;Drukkar&quot; is a play on Ukrainian &quot;друкар&quot;, meaning &quot;printer&quot; (the profession, not the peripheral).</text>
+<date>1364233526</date>
+
+<tag>hello</tag>
+</entry>

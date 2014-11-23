@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry>
+<format>html</format>
+<title>Changelog</title>
+<text>&lt;dl&gt;
+  &lt;dt&gt;2.0.0:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;The big change this release is the introduction of theming. You can select what theme your blog is going to use with the &lt;tt&gt;theme&lt;/tt&gt; setting in &lt;tt&gt;config.xml&lt;/tt&gt;.
+&lt;li&gt;A new default theme called &lt;tt&gt;flat&lt;/tt&gt;. The old theme is still available under the name &lt;tt&gt;web1.0&lt;/tt&gt; and has been improved to accommodate the new elements (see below).
+&lt;li&gt;A navbar and a sidebar have been added to the layout. (See the screenshots on the &lt;a href=&quot;https://sourceforge.net/projects/drukkar/&quot;&gt;project page&lt;/a&gt;.)
+&lt;li&gt;New blog entries' file names will include their titles. Due to this generating links with titles is obsolete and the setting &lt;tt&gt;entry_links_with_titles&lt;/tt&gt; has been removed from &lt;tt&gt;config.xml&lt;/tt&gt;.
+&lt;li&gt;This is version 2.0.0. Drukkar will use &lt;a href=&quot;http://semver.org/&quot;&gt;semantic versioning&lt;/a&gt; for any subsequent releases.&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.11:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;Replaced the tables used for layout with &lt;tt&gt;div&lt;/tt&gt; tags with minimum changes to the CSS.&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.10:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;The big one: Drukkar now implements caching for every dynamically generated page a visitor can see (plus opt-in search caching). Caches expire when the files used to generate them (data or code) are updated. This should decrease the CPU usage on your server dramatically.
+&lt;li&gt;&lt;tt&gt;files.php&lt;/tt&gt; now includes a pretty text file viewer.
+&lt;li&gt;The dynamically generated HTML code, including that of administrative pages, has been made more human-readable, with line breaks in all the right places.
+&lt;li&gt;Lots of little optimizations related to string operations.
+&lt;li&gt;The PHP code has also been reformatted to look better and fit the standard 80-column view.&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.09:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;Post dates are now time zone-aware. You'll need to set &lt;tt&gt;time_zone&lt;/tt&gt; in &lt;tt&gt;config.xml&lt;/tt&gt; to the correct value for your locale.
+    &lt;li&gt;Code documentation rewritten for compatibility with Doxygen.
+    &lt;li&gt;Fixed pagination when looking up tags or searching.&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.08:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;RSS feed added. A link to &lt;tt&gt;rss.php&lt;/tt&gt; has been added to the footer.
+    &lt;li&gt;Drukkar now ships with a favicon.&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.07:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;Added support for writing entries in &lt;a href=&quot;https://en.wikipedia.org/wiki/Markdown&quot;&gt;Markdown&lt;/a&gt; with Michel Fortin's &lt;a href=&quot;http://michelf.ca/projects/php-markdown/&quot;&gt;PHP Markdown&lt;/a&gt;.
+    &lt;li&gt;Boolean settings and &lt;tt&gt;entry_date_from_file_name&lt;/tt&gt; now work correctly.
+    &lt;li&gt;A new setting in the config file: &lt;tt&gt;show_dates&lt;/tt&gt;.
+&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.06:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;Security and early error detection improved by eliminating type-coerced comparisons and introducing explicit type conversions.
+    &lt;li&gt;The default admin session time-out value is now sane (10&amp;nbsp;minutes instead of 10&amp;nbsp;seconds).
+    &lt;li&gt;Various small improvements.
+&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.05:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;Admin sessions now expire.&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.04:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;Passwords are now hashed with salt.
+    &lt;li&gt;&lt;tt&gt;makepass.php&lt;/tt&gt; added for generating password hashes.
+    &lt;li&gt;Some security fixes.&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.03:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;The way tags work has been changed and improved.
+    &lt;li&gt;Numerous internal changes.&lt;/ul&gt;&lt;/dd&gt;
+  &lt;dt&gt;1.02:&lt;/dt&gt;
+    &lt;dd&gt;&lt;ul&gt;&lt;li&gt;The initial open-source release.&lt;/ul&gt;&lt;/dd&gt;
+&lt;/dl&gt;</text>
+<date>1389558900</date>
+
+<tag>changelog</tag>
+</entry>

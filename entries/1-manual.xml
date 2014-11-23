@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry>
+<format>markdown</format>
+<title>The manual</title>
+<text>### Getting started
+
+#### The configuration file
+
+Before you can use your blog you must edit its configuration file and set the basic settings (like where Drukkar is installed, what are your blog's title and URL, what password will be used to add and edit blog entries, etc.) correctly. The configuration file is named `config.xml` and can be found in Drukkar's main directory; it stores all the settings for your blog in XML format. The comments inside explain what each setting means.
+
+The bare minimum needed to run Drukkar on the public web is to make sure the variable `base_location` contains a correct value and `password` is changed from the default.
+
+#### Permissions
+For you to be able to use `edit.php` to create and edit blog entries your web server's *nix user must have write permissions for your directory (`entries` by default). To upload files it must have write access to `files`. The same applies to being able to use `files.php`.
+
+If you are getting write errors when viewing your blog, editing entries or uploading files and can't give your web server's user write access to your entries, files and cache directories from the command line or through your FTP/SFTP client (that is to say, you're not allowed to `chown` or `chmod` those directories) do the following:
+
+1. Remove the `entries`, `files` and `cache` subdirectories from your Drukkar directory (e.g., `drukkar-dir`) on the server.
+2. Give everyone temporary write access to that directory (e.g., through `chmod a+w drukkar-dir` ).  Note that you should give write access only to the directory itself; permissions on its files don't matter. This will allow your web server to create subdirectories that belong to its user.
+3. Recreate entries, files and cache subdirectories using `makedirs.php`. To do so access `http://example.com/drukkar-dir/makedirs.php` with your browser.
+4. Revoke write access from the Drukkar directory (e.g., `chmod a-w drukkar-dir`)
+5. Place appropriate `.htaccess` files in the subdirectories.
+
+#### Managing blog entries
+
+Let's assume you've installed Drukkar under `http://example.com/drukkar-location/`. To **add, edit or delete entries** go to `http://example.com/drukkar-location/edit.php`. To **manage files,** both attachments and the XML files that contain blog entries, go to `http://example.com/drukkar-location/files.php`. The **default password is &quot;password&quot;** (without the quotes). Note that when you delete an entry the files you uploaded when you created it aren't gone; you have to delete them manually.
+
+### Some nuances and details
+
+#### Tags
+
+Each blog entry can have one or more tags attached to it that indicated what this entry is about (e.g., you can have tags like &quot;business&quot;, &quot;cooking&quot;, &quot;TI-89&quot;, &quot;April 2013 report&quot;). The tags an entry has are displayed underneath its text and are links. Your users will be able to list all entries that have a certain tag by clicking on that tag. You can add tags to an entry by putting them in the &quot;Tags&quot; field when using `edit.php`, one per line.
+
+#### Entries that are hidden and excluded from listing
+
+Two tags have special meanings, `_excluded` and `_hidden`. You can use them to hide certain blog entries from the public in two distinct ways for different purposes.
+
+An entry marked as &quot;excluded&quot; won't be show up on the main page of your blog but can still be found through full text search or by looking up entries with a tag it has. This feature is useful to keep some entries away from your main page (e.g., special pages like &quot;About Us&quot; and &quot;Contact&quot;). To mark an entry as excluded add the tag `_excluded` (with the underscore) to its tag list.
+
+Hidden entries are more private. To mark an entry as hidden add `_hidden` to its tags. A hidden entry can only be viewed by someone who got a direct link to it. Hidden entries don't show up in search.
+
+Users can't get the list of entries tagged `_excluded` or `_hidden` and they don't show up in the tags list when viewing an excluded or a hidden entry.
+
+#### Localization
+
+First, to have the correct local date and time displayed under your blog posts and in your RSS feed set the value of `time_zone` in `config.xml` to your local time zone (the default is UTC/GMT). Consult this [list of time zones](http://php.net/manual/en/timezones.php) for all possible values you can use.
+
+To make Drukkar's messages appear in your language of choice you need a localization file. If you can't find one for your language you can create one with relative ease. Once you've got the file you'll need to change the locale setting in `config.xml`.
+
+First, look into the /inc directory of your Drukkar installation and see if there is a file named loc_xx.php where xx is the [two-letter code](http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) for your language. If there is one you can skip the following step.
+
+If you can't find a localization file for your language you can create one by copying `/inc/loc_en.php` into a new file named `loc_xx.php` (where `xx` is the two-letter code for your language). Proceed to translate the strings in `loc_xx.php` into your language. Take note of the `%s` symbols that occur in strings. These symbols are substituted for file names in messages displayed to the user; do not remove them.
+
+When that's done change the `locale` value in `config.xml` to your language's code and see if everything works properly.
+
+Make sure to submit your translation to the Drukkar project to help out other users who speak your language.
+
+#### Security
+
+By default Drukkar sends your password in plaintext. In order to access `edit.php` and `files.php` securely you need to set up SSL (HTTPS) support on your server.
+
+Make sure to specify `salt` in `config.xml` to make it somewhat harder to crack your password if its hash gets leaked.
+
+### That's it
+
+You are now ready to make your own blog with Drukkar.</text>
+<date>1364478300</date>
+
+<tag>manual</tag>
+</entry>

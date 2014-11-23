@@ -1,0 +1,11 @@
+Options -Indexes
+Options -ExecCGI
+
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+<FilesMatch ".*">
+SetHandler default-handler
+</FilesMatch>
