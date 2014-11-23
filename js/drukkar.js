@@ -1,11 +1,38 @@
+var htmlize = null;
+
 (function() {
     'use strict';
 
-    function debug(x) {
+    var config_override = {
+        version: "0.0.1"
+    };
+
+    var debug = function(x) {
         console.log(JSON.stringify(x));
     }
 
+    // Convert data to HTML from text or Markdown according to format.
+    htmlize = function(data, format) {
+        if (format === "text") {
+            return _.escape(data);
+        } else if (format === "markdown") {
+            return marked(data);
+        } else {
+            // Assumet data is HTML.
+            return data;
+        }
+    }
+
     var Post = Backbone.Model.extend({
+        defaults: {
+            title: "",
+            text: "",
+            format: "html",
+            files: "",
+            date: "0",
+            tags: ""
+        },
+
         parse: function(response) {
             var parsed = {files: [], tags: []};
             _.each(response.querySelectorAll('entry > :not(file):not(tag)'), function(el) {
@@ -34,7 +61,7 @@
 
         comparator: function(post) {
             // Sort by XML file name (=== id) like the original.
-            return post.date // FIXME
+            return post.attributes.id // FIXME
         },
 
         initialize: function(posts, options) {
@@ -90,8 +117,6 @@
     });
 
     var Config = Backbone.Model.extend({
-        urlRoot: '/',
-
         url: 'drukkar.json',
     });
 
@@ -102,8 +127,10 @@
 
         template: _.template(document.querySelector("#container_template").textContent),
 
-        initialize: function() {
+        initialize: function(options) {
+            this.config = options.config;
             this.collection = new PostCollection();
+            this.collection.url = this.config.attributes.entries_dir;
         },
 
         render: function() {
@@ -127,10 +154,8 @@
     // Backbone.history.start();
     var config = new Config();
     config.on("sync", function() {
-        var page = new PageView();
-        page.config = config;
-        config.set({version: "0.0.1"});
-        page.collection.url = config.attributes.entries_dir;
+        var page = new PageView({config: config});
+        config.set(config_override);
         page.collection.fetch();
         page.collection.on("update", function() {
             page.render();

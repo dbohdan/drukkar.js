@@ -9,21 +9,19 @@
 <body>
     <script type="text/template" id="post_template">
         <div class="blogentry">
-            <h2 class="entrytitle"><a class="titlelink" href=""><%= title %></a></h2>
+            <h2 class="entrytitle"><a class="titlelink" href=""><%= htmlize(title, format) %></a></h2>
             <div class="text">
-                <% if (format === "text") { %>
-                    <%- text %>
-                <% } else if (format === "html") { %>
-                    <%= text %>
-                <% } else if (format === "markdown") { %>
-                    <%= marked(text) %>
-                <% } %>
+                <%= htmlize(text, format) %>
             </div><!-- .text -->
-            <p class="files"><%= files.join(', ') %></p>
+            <p class="files"><% for (var i = 0; i < files.length; i++) { %>
+                <a href="<%= config.files_dir %><%= encodeURIComponent(files[i]) %>"><%- files[i] %></a><br>
+            <% } %></p>
             <% if (config.show_dates) { %><p class="date">
                 <%= moment.unix(parseInt(date, 10)).zone(config.time_zone).format(config.date_format) %>
             </p><% } %>
-            <p class="tags">Tags: <%= tags.join(', ') %></p>
+            <p class="tags"><% for (var i = 0; i < tags.length; i++) { %>
+                <a href="tag=<%= encodeURIComponent(tags[i]) %>"><%- tags[i] %></a><% if (i != tags.length - 1) { %>, <% } %>
+            <% } %></p
         </div><!-- .blogentry -->
     </script>
     <script type="text/template" id="container_template">
