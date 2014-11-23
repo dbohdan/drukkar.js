@@ -3,10 +3,10 @@
 Usage
 =====
 
-1\. Configure Drukkar.js through `drukkar.json`.
-2\. Put your posts in `entries/` and files in `files/`.
-3\. Run `make-post-list.sh`.
-4\. Deploy.
+1. Configure Drukkar.js through `drukkar.json`.
+2. Put your posts in `entries/` and files in `files/`.
+3. Run `make-post-list.sh`.
+4. Deploy.
 
 Missing features
 ================
@@ -18,6 +18,12 @@ Compared to the original Drukkar Drukkar.js lacks
 * Pagination;
 * Localization;
 * A post editor and a file uploader. These two will not be implemented.
+
+Changes from Drukkar
+====================
+
+* The configuration file is called `drukkar.json`. It uses JSON instead of XML.
+* Rather than [PHP date formatting](http://php.net/manual/en/function.date.php) Drukkar.js uses Moment.js [formatting](http://momentjs.com/docs/#/displaying/format/) and [time zone syntax](http://momentjs.com/docs/#/manipulating/timezone-offset/).
 
 License
 =======

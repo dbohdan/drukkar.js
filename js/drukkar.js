@@ -6,8 +6,6 @@
     }
 
     var Post = Backbone.Model.extend({
-        urlRoot: '/entries',
-
         parse: function(response) {
             var parsed = {files: [], tags: []};
             _.each(response.querySelectorAll('entry > :not(file):not(tag)'), function(el) {
@@ -54,7 +52,10 @@
             // that.updateCounter = 0;
             // Fetch and parse models.
             var parsed = _.map(split.slice(0, split.length - 1).reverse(),function(id) {
-                var post = new Post({id: id});
+                var post = new Post({
+                    id: id
+                });
+                post.collection = that;
                 post.once("change", function(post) {
                     that.updateCounter++;
                 });
@@ -67,6 +68,7 @@
         fetch: function(options) {
             options = options || {};
             options.dataType = "text";
+            options.url = this.url + '/postlist.txt';
             return Backbone.Collection.prototype.fetch.call(this, options);
         }
     });
@@ -98,6 +100,8 @@
 
         config: null,
 
+        template: _.template(document.querySelector("#container_template").textContent),
+
         initialize: function() {
             this.collection = new PostCollection();
         },
@@ -115,9 +119,7 @@
             });
             post_view.config = this.config;
             this.el.querySelector("#content").appendChild(post_view.render().el);
-        },
-
-        template: _.template(document.querySelector("#container_template").textContent),
+        }
     });
 
     var BlogRouter = Backbone.Router.extend({});
@@ -128,7 +130,7 @@
         var page = new PageView();
         page.config = config;
         config.set({version: "0.0.1"});
-        page.collection.url = '/entries/postlist.txt';
+        page.collection.url = config.attributes.entries_dir;
         page.collection.fetch();
         page.collection.on("update", function() {
             page.render();
