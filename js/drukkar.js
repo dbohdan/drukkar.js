@@ -1,35 +1,34 @@
-var htmlize = null;
-var format_post_date = null;
+var app = app || {};
+
+// Convert data to HTML from text or Markdown according to format.
+var htmlize = function(data, format) {
+    if (format === "text") {
+        return _.escape(data);
+    } else if (format === "markdown") {
+        return marked(data);
+    } else {
+        // Assume the data is HTML.
+        return data;
+    }
+}
+
+var format_post_date = function(date, date_format, time_zone) {
+    var time_zone = time_zone || "UTC";
+    return moment.unix(parseInt(date, 10)).zone(time_zone).format(date_format);
+}
+
+var debug = function(x) {
+    console.log(JSON.stringify(x));
+};
 
 (function() {
     'use strict';
 
-    var config_override = {
+    app.config_override = {
         version: "0.0.1"
     };
 
-    var debug = function(x) {
-        console.log(JSON.stringify(x));
-    }
-
-    // Convert data to HTML from text or Markdown according to format.
-    htmlize = function(data, format) {
-        if (format === "text") {
-            return _.escape(data);
-        } else if (format === "markdown") {
-            return marked(data);
-        } else {
-            // Assumet data is HTML.
-            return data;
-        }
-    }
-
-    format_post_date = function(date, date_format, time_zone) {
-        var time_zone = time_zone || "UTC";
-        return moment.unix(parseInt(date, 10)).zone(time_zone).format(date_format);
-    }
-
-    var Post = Backbone.Model.extend({
+    app.Post = Backbone.Model.extend({
         defaults: {
             title: "",
             text: "",
@@ -72,8 +71,8 @@ var format_post_date = null;
         isExcluded: false
     });
 
-    var PostCollection = Backbone.Collection.extend({
-        model: Post,
+    app.PostCollection = Backbone.Collection.extend({
+        model: app.Post,
 
         updateCounter: 0,
 
@@ -97,7 +96,7 @@ var format_post_date = null;
             // that.updateCounter = 0;
             // Fetch and parse models.
             var parsed = _.map(split.slice(0, split.length - 1),function(id) {
-                var post = new Post({
+                var post = new app.Post({
                     id: id
                 });
                 post.collection = that;
@@ -118,8 +117,8 @@ var format_post_date = null;
         }
     });
 
-    var PostView = Backbone.View.extend({
-        model: Post,
+    app.PostView = Backbone.View.extend({
+        model: app.Post,
 
         config: null,
 
@@ -134,11 +133,11 @@ var format_post_date = null;
         }
     });
 
-    var Config = Backbone.Model.extend({
+    app.Config = Backbone.Model.extend({
         url: 'drukkar.json'
     });
 
-    var PageView = Backbone.View.extend({
+    app.PageView = Backbone.View.extend({
         el: "body",
 
         config: null,
@@ -154,7 +153,7 @@ var format_post_date = null;
         initialize: function(options) {
             this.config = options.config;
             this.filter = this.filter_default;
-            this.collection = new PostCollection();
+            this.collection = new app.PostCollection();
             this.collection.url = this.config.attributes.entries_dir;
             var that = this;
             this.collection.on("update", function() {
@@ -170,7 +169,7 @@ var format_post_date = null;
         },
 
         renderPost: function(item) {
-            var post_view = new PostView({
+            var post_view = new app.PostView({
                 model: item
             });
             post_view.config = this.config;
@@ -178,8 +177,7 @@ var format_post_date = null;
         }
     });
 
-    var page = null;
-    var BlogRouter = Backbone.Router.extend({
+    app.BlogRouter = Backbone.Router.extend({
         routes: {
             "": "index",
             "page/:page": "page",
@@ -189,25 +187,25 @@ var format_post_date = null;
         },
 
         id: function(id) {
-            page.filter = function(post) {
+            app.page.filter = function(post) {
                 return post.get("id") === id + ".xml";
             }
-            page.render();
+            app.page.render();
         },
 
         index: function() {
-            page.filter = page.filter_default;
-            page.render();
+            app.page.filter = app.page.filter_default;
+            app.page.render();
         },
 
         tag: function(tag) {
             if (tag === "_excluded" || tag === "_hidden") {
                 // Do not search for the special tags.
-                page.filter = function(post) {
+                app.page.filter = function(post) {
                     return false;
                 }
             } else {
-                page.filter = function(post) {
+                app.page.filter = function(post) {
                     if (post.isHidden) {
                         return false;
                     }
@@ -216,37 +214,37 @@ var format_post_date = null;
                     });
                 }
             }
-            page.render();
+            app.page.render();
         },
 
         search: function(query) {
             var q = query.toLowerCase();
-            page.filter = function(post) {
+            app.page.filter = function(post) {
                 if (post.isHidden) {
                     return false;
                 }
                 var plain_text = post.get("title") +
                         post.get("text") +
                         post.get("files").join();
-                if (page.config.get("show_dates")) {
+                if (app.page.config.get("show_dates")) {
                     plain_text += format_post_date(post.get("date"),
-                            page.config.get("date_format"),
-                            page.config.get("time_zone"));
+                            app.page.config.get("date_format"),
+                            app.page.config.get("time_zone"));
                 }
                 // TODO: strip out HTML and Markdown from text and title.
                 return plain_text.toLowerCase().indexOf(q) > -1;
             }
-            page.render();
+            app.page.render();
         }
     });
 
-    var config = new Config();
-    config.on("sync", function() {
-        page = new PageView({config: config});
-        var router = new BlogRouter();
+    app.config = new app.Config();
+    app.config.on("sync", function() {
+        app.page = new app.PageView({config: app.config});
+        app.router = new app.BlogRouter();
         Backbone.history.start();
-        config.set(config_override);
-        page.collection.fetch();
+        app.config.set(app.config_override);
+        app.page.collection.fetch(); // TODO: fetch at interval to make updates show up.
     });
-    config.fetch();
+    app.config.fetch();
 })();
