@@ -1,4 +1,5 @@
 var htmlize = null;
+var format_post_date = null;
 
 (function() {
     'use strict';
@@ -23,6 +24,11 @@ var htmlize = null;
         }
     }
 
+    format_post_date = function(date, date_format, time_zone) {
+        var time_zone = time_zone || "UTC";
+        return moment.unix(parseInt(date, 10)).zone(time_zone).format(date_format);
+    }
+
     var Post = Backbone.Model.extend({
         defaults: {
             title: "",
@@ -31,6 +37,14 @@ var htmlize = null;
             files: "",
             date: "0",
             tags: ""
+        },
+
+        initialize: function() {
+            var that = this;
+            this.on("change:tags", function() {
+                that.isExcluded = _.indexOf(that.get("tags"), "_excluded") > -1;
+                that.isHidden = _.indexOf(that.get("tags"), "_hidden") > -1;
+            });
         },
 
         parse: function(response) {
@@ -51,7 +65,11 @@ var htmlize = null;
             options = options || {};
             options.dataType = "xml";
             return Backbone.Model.prototype.fetch.call(this, options);
-        }
+        },
+
+        isHidden: false,
+
+        isExcluded: false
     });
 
     var PostCollection = Backbone.Collection.extend({
@@ -59,9 +77,9 @@ var htmlize = null;
 
         updateCounter: 0,
 
-        comparator: function(post) {
+        comparator: function(post1, post2) {
             // Sort by XML file name (=== id) like the original.
-            return post.attributes.id // FIXME
+            return (post1.attributes.id < post2.attributes.id ? 1 : -1);
         },
 
         initialize: function(posts, options) {
@@ -78,7 +96,7 @@ var htmlize = null;
             var that = this;
             // that.updateCounter = 0;
             // Fetch and parse models.
-            var parsed = _.map(split.slice(0, split.length - 1).reverse(),function(id) {
+            var parsed = _.map(split.slice(0, split.length - 1),function(id) {
                 var post = new Post({
                     id: id
                 });
@@ -117,7 +135,7 @@ var htmlize = null;
     });
 
     var Config = Backbone.Model.extend({
-        url: 'drukkar.json',
+        url: 'drukkar.json'
     });
 
     var PageView = Backbone.View.extend({
@@ -127,15 +145,26 @@ var htmlize = null;
 
         template: _.template(document.querySelector("#container_template").textContent),
 
+        filter: null,
+
+        filter_default: function(post) {
+            return !(post.isHidden || post.isExcluded);
+        },
+
         initialize: function(options) {
             this.config = options.config;
+            this.filter = this.filter_default;
             this.collection = new PostCollection();
             this.collection.url = this.config.attributes.entries_dir;
+            var that = this;
+            this.collection.on("update", function() {
+                that.render();
+            });
         },
 
         render: function() {
             this.el.innerHTML = this.template({config: this.config.attributes});
-            this.collection.each(function(item) {
+            _.each(this.collection.filter(this.filter), function(item) {
                 this.renderPost(item);
             }, this);
         },
@@ -149,17 +178,75 @@ var htmlize = null;
         }
     });
 
-    var BlogRouter = Backbone.Router.extend({});
+    var page = null;
+    var BlogRouter = Backbone.Router.extend({
+        routes: {
+            "": "index",
+            "page/:page": "page",
+            "tag/:tag": "tag",
+            ":id": "id",
+            "search/:query": "search"
+        },
 
-    // Backbone.history.start();
+        id: function(id) {
+            page.filter = function(post) {
+                return post.get("id") === id + ".xml";
+            }
+            page.render();
+        },
+
+        index: function() {
+            page.filter = page.filter_default;
+            page.render();
+        },
+
+        tag: function(tag) {
+            if (tag === "_excluded" || tag === "_hidden") {
+                // Do not search for the special tags.
+                page.filter = function(post) {
+                    return false;
+                }
+            } else {
+                page.filter = function(post) {
+                    if (post.isHidden) {
+                        return false;
+                    }
+                    return _.some(post.attributes.tags, function(post_tag) {
+                        return (post_tag === tag);
+                    });
+                }
+            }
+            page.render();
+        },
+
+        search: function(query) {
+            var q = query.toLowerCase();
+            page.filter = function(post) {
+                if (post.isHidden) {
+                    return false;
+                }
+                var plain_text = post.get("title") +
+                        post.get("text") +
+                        post.get("files").join();
+                if (page.config.get("show_dates")) {
+                    plain_text += format_post_date(post.get("date"),
+                            page.config.get("date_format"),
+                            page.config.get("time_zone"));
+                }
+                // TODO: strip out HTML and Markdown from text and title.
+                return plain_text.toLowerCase().indexOf(q) > -1;
+            }
+            page.render();
+        }
+    });
+
     var config = new Config();
     config.on("sync", function() {
-        var page = new PageView({config: config});
+        page = new PageView({config: config});
+        var router = new BlogRouter();
+        Backbone.history.start();
         config.set(config_override);
         page.collection.fetch();
-        page.collection.on("update", function() {
-            page.render();
-        })
     });
     config.fetch();
 })();

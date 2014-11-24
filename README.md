@@ -13,8 +13,6 @@ Missing features
 
 Compared to the original Drukkar Drukkar.js lacks
 
-* Search;
-* Tags;
 * Pagination;
 * Localization;
 * A post editor and a file uploader. These two will not be implemented.

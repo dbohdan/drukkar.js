@@ -9,7 +9,7 @@
 <body>
     <script type="text/template" id="post_template">
         <div class="blogentry">
-            <h2 class="entrytitle"><a class="titlelink" href=""><%= htmlize(title, format) %></a></h2>
+            <h2 class="entrytitle"><a class="titlelink" href="#/<%= id.substr(0, id.lastIndexOf('.')) %>"><%= htmlize(title, format) %></a></h2>
             <div class="text">
                 <%= htmlize(text, format) %>
             </div><!-- .text -->
@@ -17,23 +17,25 @@
                 <a href="<%= config.files_dir %><%= encodeURIComponent(files[i]) %>"><%- files[i] %></a><br>
             <% } %></p>
             <% if (config.show_dates) { %><p class="date">
-                <%= moment.unix(parseInt(date, 10)).zone(config.time_zone).format(config.date_format) %>
+                <%= format_post_date(date, config.date_format, config.time_zone) %>
             </p><% } %>
             <p class="tags"><% for (var i = 0; i < tags.length; i++) { %>
-                <a href="tag=<%= encodeURIComponent(tags[i]) %>"><%- tags[i] %></a><% if (i != tags.length - 1) { %>, <% } %>
+                <% if (!(tags[i] === "_excluded" || tags[i] === "_hidden")) { %>
+                    <a href="#/tag/<%= encodeURIComponent(tags[i]) %>"><%- tags[i] %></a><% if (i != tags.length - 1) { %>, <% } %>
+                <% } %>
             <% } %></p
         </div><!-- .blogentry -->
     </script>
     <script type="text/template" id="container_template">
         <div id="container">
         <div id="header">
-            <h1 id="title"><a id="blogtitle" href="/"><%= config.title %></a></h1>
+            <h1 id="title"><a id="blogtitle" href="#"><%= config.title %></a></h1>
             <% if (config.subtitle !== "") { %><h2 id="subtitle"><%= config.subtitle %></h2><% } %>
         </div><!-- #header -->
         <% if (config.navbar_enabled) { %><div id="navbar">
-            <a href="/">Home</a>
-            <a href="/index.php?post=1-manual">Manual</a>
-            <a href="/index.php?post=0-changelog">Changelog</a>
+            <a href="#">Home</a>
+            <a href="#/1-manual">Manual</a>
+            <a href="#/0-changelog">Changelog</a>
         </div><!-- #navbar --><% } %>
         <% if (config.search_enabled) { %><div id="search">
             <form action="index.php">

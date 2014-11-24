@@ -1,7 +1,7 @@
 {
   "base_location": "/",
-  "entries_dir": "entries-1.06/",
-  "files_dir": "files-1.06/",
+  "entries_dir": "entries/",
+  "files_dir": "files/",
 
   "title": "Blog title here",
   "subtitle": "Blog subtitle here",
