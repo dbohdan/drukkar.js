@@ -7,24 +7,31 @@ var app = app || {};
         routes: {
             "": "index",
             "page/:page": "page",
-            "tag/:tag": "tag",
+            "tag/:tag(/page/:page)": "tag",
             ":id": "id",
-            "search/:query": "search"
+            "search/:query(/page/:page)": "search"
+        },
+
+        index: function() {
+            this.page(0);
+        },
+
+        page: function(page) {
+            app.page.filter = app.page.filter_default;
+            app.page.currentPage = +page;
+            app.page.kind = ["page"];
+            app.page.render();
         },
 
         id: function(id) {
             app.page.filter = function(post) {
                 return post.get("id") === id + ".xml";
             }
+            app.page.kind = ["id", id];
             app.page.render();
         },
 
-        index: function() {
-            app.page.filter = app.page.filter_default;
-            app.page.render();
-        },
-
-        tag: function(tag) {
+        tag: function(tag, page) {
             if (tag === "_excluded" || tag === "_hidden") {
                 // Do not search for the special tags.
                 app.page.filter = function(post) {
@@ -39,11 +46,13 @@ var app = app || {};
                         return (post_tag === tag);
                     });
                 }
+                app.page.currentPage = +page;
             }
+            app.page.kind = ["tag", tag];
             app.page.render();
         },
 
-        search: function(query) {
+        search: function(query, page) {
             var q = query.toLowerCase();
             app.page.filter = function(post) {
                 if (post.isHidden) {
@@ -60,6 +69,8 @@ var app = app || {};
                 // TODO: strip out HTML and Markdown from text and title.
                 return plain_text.toLowerCase().indexOf(q) > -1;
             }
+            app.page.kind = ["search", query];
+            app.page.currentPage = +page;
             app.page.render();
         }
     });
