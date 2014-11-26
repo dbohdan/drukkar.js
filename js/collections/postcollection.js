@@ -25,7 +25,7 @@ var app = app || {};
         parse: function(response) {
             var split = response.split("\n");
             var that = this;
-            // that.updateCounter = 0;
+            that.updateCounter = 0;
             // Fetch and parse models.
             var parsed = _.map(split.slice(0, split.length - 1),function(id) {
                 var post = new app.Post({
@@ -35,7 +35,11 @@ var app = app || {};
                 post.once("change", function(post) {
                     that.updateCounter++;
                 });
-                post.fetch();
+                post.fetch({
+                    error: function() {
+                        that.remove(post);
+                    }
+                });
                 return post;
             });
             return parsed;
@@ -45,6 +49,7 @@ var app = app || {};
             options = options || {};
             options.dataType = "text";
             options.url = this.url + 'postlist.txt';
+            options.cache = false;
             return Backbone.Collection.prototype.fetch.call(this, options);
         }
     });

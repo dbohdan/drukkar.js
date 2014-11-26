@@ -34,7 +34,11 @@ var debug = function(x) {
         app.router = new app.BlogRouter();
         Backbone.history.start();
         app.config.set(app.config_override);
-        app.page.collection.fetch(); // TODO: fetch at interval to make updates show up.
+        app.page.collection.fetch();
+        // TODO: fetch at interval to make updates show up.
+        // setInterval(function() {
+        //     app.page.collection.fetch({ reset: true });
+        // }, 60 * 1000);
     });
     app.config.fetch();
 })();
