@@ -13,8 +13,7 @@ Missing features
 
 Compared to the original Drukkar Drukkar.js lacks
 
-* Localization support;
-* A post editor and a file uploader. These two will not be implemented.
+* A post editor and a file uploader. These will not be implemented.
 
 Changes from Drukkar
 ====================

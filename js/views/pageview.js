@@ -17,6 +17,8 @@ var app = app || {};
 
         template: _.template(document.querySelector("#container_template").textContent),
 
+        errorTemplate: _.template(document.querySelector("#error_template").textContent),
+
         filter: null,
 
         filter_default: function(post) {
@@ -27,9 +29,15 @@ var app = app || {};
 
         initialize: function(options) {
             this.config = options.config;
+            this.localization = new app.Localization();
+            this.localization.url = "loc_" + this.config.get("locale") + ".json";
+            this.localization.fetch();
+
             this.filter = this.filter_default;
+
             this.collection = new app.PostCollection();
-            this.collection.url = this.config.attributes.entries_dir;
+            this.collection.url = this.config.get("entries_dir");
+
             var that = this;
             this.collection.on("update", function() {
                 that.render();
@@ -58,6 +66,7 @@ var app = app || {};
 
             this.el.innerHTML = this.template({
                 config: this.config.attributes,
+                loc: this.localization.attributes,
                 page: this.currentPage,
                 max_page: Math.ceil(posts.length / per_page) - 1,
                 route_prefix: route_prefix
@@ -67,10 +76,10 @@ var app = app || {};
                     this.renderPost(post);
                 }, this);
             } else {
-                if (this.kind[0] === "id") { // TODO: display these in the page.
-                    debug("The entry you've specified doesn't exist.");
+                if (this.kind[0] === "id") {
+                    this.renderError(this.localization.get("entry_not_found"));
                 } else {
-                    debug("No matching entries found.");
+                    this.renderError(this.localization.get("no_matches"));
                 }
             }
         },
@@ -80,9 +89,24 @@ var app = app || {};
                 model: item
             });
             post_view.config = this.config;
+            post_view.localization = this.localization;
+            this.append(post_view.render().el);
+        },
+
+        renderError: function(message) {
+            var error = document.createElement('div');
+            error.innerHTML = this.errorTemplate({
+                message: message,
+                config: this.config.attributes,
+                loc: this.localization.attributes
+            });
+            this.append(error);
+        },
+
+        append: function(node) {
             var content = this.el.querySelector("#content");
             var after_entries = content.querySelector("#pagelinks");
-            content.insertBefore(post_view.render().el, after_entries);
+            content.insertBefore(node, after_entries);
         }
     });
 })();

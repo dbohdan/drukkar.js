@@ -8,12 +8,16 @@ var app = app || {};
 
         config: null,
 
+        localization: null,
+
         template: _.template(document.querySelector("#post_template").textContent),
 
         render: function() {
             this.el.innerHTML = this.template(
-                _.extend(_.clone(this.model.attributes),
-                        {config: this.config.attributes})
+                _.extend(_.clone(this.model.attributes),{
+                    config: this.config.attributes,
+                    loc: this.localization.attributes
+                })
             );
             return this;
         }

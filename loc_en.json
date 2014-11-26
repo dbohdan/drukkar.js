@@ -1,0 +1,10 @@
+{
+  "search": "Search",
+  "no_matches": "No matching entries found.",
+  "entry_not_found": "The entry you've specified doesn't exist.",
+  "tags": "Tags",
+  "files": "Files",
+  "date": "Date",
+  "next_page": "Next page",
+  "prev_page": "Previous page"
+}

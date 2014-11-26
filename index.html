@@ -19,10 +19,15 @@
             <% if (config.show_dates) { %><p class="date">
                 <%= format_post_date(date, config.date_format, config.time_zone) %>
             </p><% } %>
-            <p class="tags"><% var t = _.filter(tags, function(tag) {return !(tag === "_excluded" || tag === "_hidden")}); for (var i = 0; i < t.length; i++) { %>
+            <p class="tags"><%= loc.tags %>: <% var t = _.filter(tags, function(tag) {return !(tag === "_excluded" || tag === "_hidden")}); for (var i = 0; i < t.length; i++) { %>
                 <a href="#/tag/<%= encodeURIComponent(t[i]) %>"><%- t[i] %></a><% if (i !== t.length - 1) { %>, <% } %>
-            <% } %></p
+            <% } %></p>
         </div><!-- .blogentry -->
+    </script>
+    <script type="text/template" id="error_template">
+        <div class="errormessage">
+            <%= message %>
+        </div><!-- .errormessage -->
     </script>
     <script type="text/template" id="container_template">
         <div id="container">
@@ -39,7 +44,7 @@
                 <form id="searchformform">
                     <div id="searchform">
                         <input type="text" name="search" id="searchfield" size=50>&nbsp;
-                        <input type="submit" class="button" id="searchbutton" value="Search">
+                        <input type="submit" class="button" id="searchbutton" value="<%= loc.search %>">
                     </div><!-- #searchform -->
                 </form>
             </div><!-- #search --><% } %>
@@ -51,10 +56,10 @@
             <div id="content">
             <div id="pagelinks">
                 <% if (page > 0) { %>
-                    <a id="prevpagelink" href="#/<%= route_prefix %>page/<%= page - 1 %>">Previous page</a>
+                    <a id="prevpagelink" href="#/<%= route_prefix %>page/<%= page - 1 %>"><%= loc.prev_page %></a>
                 <% } %>
                 <% if (page < max_page) { %>
-                    <a id="nextpagelink" href="#/<%= route_prefix %>page/<%= page + 1 %>">Next page</a>
+                    <a id="nextpagelink" href="#/<%= route_prefix %>page/<%= page + 1 %>"><%= loc.next_page %></a>
                 <% } %>
             </div><!-- #pagelinks -->
             </div><!-- #content -->
@@ -64,15 +69,19 @@
             </div><!-- #footer -->
         </div><!-- #container -->
     </script>
+    <!-- Dependencies. -->
     <script type="text/javascript" src="bower_components/underscore/underscore.js"></script>
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="bower_components/backbone/backbone.js"></script>
     <script type="text/javascript" src="bower_components/marked/lib/marked.js"></script>
     <script type="text/javascript" src="bower_components/moment/moment.js"></script>
+    <!-- Application proper. -->
     <script type="text/javascript" src="js/models/post.js"></script>
     <script type="text/javascript" src="js/models/config.js"></script>
+    <script type="text/javascript" src="js/models/localization.js"></script>
     <script type="text/javascript" src="js/collections/postcollection.js"></script>
     <script type="text/javascript" src="js/views/postview.js"></script>
+    <script type="text/javascript" src="js/views/errorview.js"></script>
     <script type="text/javascript" src="js/views/pageview.js"></script>
     <script type="text/javascript" src="js/routers/blogrouter.js"></script>
     <script type="text/javascript" src="js/drukkar.js"></script>
