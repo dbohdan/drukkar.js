@@ -17,6 +17,15 @@ var format_post_date = function(date, date_format, time_zone) {
     return moment.unix(parseInt(date, 10)).zone(time_zone).format(date_format);
 };
 
+var format_post_tags = function(tags, sep) {
+    var sep = sep || ", ";
+    return _(tags).filter(function(tag) {
+        return !(tag === "_excluded" || tag === "_hidden");
+    }).map(function(tag) {
+        return '<a href="#/tag/' + encodeURIComponent(tag) + '">' + _.escape(tag) + '</a>';
+    }).join(sep);
+};
+
 var debug = function(x) {
     console.log(JSON.stringify(x));
 };

@@ -2,9 +2,12 @@
   "search": "Search",
   "no_matches": "No matching entries found.",
   "entry_not_found": "The entry you've specified doesn't exist.",
-  "tags": "Tags",
+  "tags": "Tags: %s",
   "files": "Files",
   "date": "Date",
+  "page": "Page %s",
+  "search_title": "Searching for '%s'",
+  "tag_title": "Posts tagged '%s'",
   "next_page": "Next page",
   "prev_page": "Previous page"
 }

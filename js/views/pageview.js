@@ -3,6 +3,10 @@ var app = app || {};
 (function() {
     'use strict';
 
+    var add_if_not_blank = function(s1, s2) {
+        return (s1 === "" ? "" : s1 + s2);
+    }
+
     app.PageView = Backbone.View.extend({
         el: "body",
 
@@ -25,38 +29,111 @@ var app = app || {};
 
         filter: null,
 
-        filter_default: function(post) {
-            return !(post.isHidden || post.isExcluded);
+        makeFilterDefault: function() {
+            return function(post) {
+                return !(post.isHidden || post.isExcluded);
+            };
         },
+
+        makeFilterId: function(id) {
+            return function(post) {
+                return post.get("id") === id + ".xml";
+            };
+        },
+
+        makeFilterTag: function(tag) {
+            return function(post) {
+                if (post.isHidden) {
+                    return false;
+                }
+                return _.some(post.attributes.tags, function(post_tag) {
+                    return post_tag === tag;
+                });
+            }
+        },
+
+        makeFilterSearch: function(query) {
+            return function(post) {
+                if (post.isHidden) {
+                    return false;
+                }
+                var plain_text = post.get("title") +
+                        post.get("text") +
+                        (post.get("files").join());
+                if (app.page.config.get("show_dates")) {
+                    plain_text += format_post_date(
+                        post.get("date"),
+                        app.page.config.get("date_format"),
+                        app.page.config.get("time_zone")
+                    );
+                }
+                // TODO: strip out HTML and Markdown from text and title.
+                return plain_text.toLowerCase().indexOf(query) > -1;
+            }
+        },
+
         currentPage: 0,
 
         initialize: function(options) {
             this.config = options.config;
-            this.localization = new app.Localization();
-            this.localization.url = "loc_" + this.config.get("locale") + ".json";
-            this.localization.fetch();
-
-            this.filter = this.filter_default;
-
-            this.collection = new app.PostCollection();
-            this.collection.url = this.config.get("entries_dir");
-            this.collection.fetch = _.debounce(
-                this.collection.fetch,
-                this.config.get("refresh_interval") * 1000,
-                true);
-            this.collection.fetch();
 
             var that = this;
-            this.collection.on("update", function() {
-                that.render();
+
+            var cont = function() {
+                // Message localization.
+                that.localization = new app.Localization();
+                that.localization.url = "loc_" + that.config.get("locale") + ".json";
+                that.localization.fetch();
+
+                // Posts.
+                that.filter = that.filterDefault;
+
+                that.collection = new app.PostCollection();
+                that.collection.url = that.config.get("entries_dir");
+                that.collection.fetch = _.debounce(
+                    that.collection.fetch,
+                    that.config.get("refresh_interval") * 1000,
+                    true);
+                that.collection.fetch();
+
+                that.collection.on("update", function() {
+                    that.render();
+                });
+            }
+
+            // Load blog theme and continue.
+            $('#page_style').load(cont).attr({
+                href: "themes/" + this.config.get("theme") + "/blog.css"
             });
         },
 
+        updateTitle: function(posts, title_sep) {
+            var title_sep = title_sep || " | ";
+
+            var title = '';
+            if (this.kind[0] === "id") {
+                title = posts[0].get("title"); // TODO: strip out HTML, Markdown.
+            } else if (this.kind[0] === "search") {
+                title = sprintf(this.localization.get("search_title"), this.kind[1]);
+            } else if (this.kind[0] === "tag") {
+                title = sprintf(this.localization.get("tag_title"),this.kind[1]);
+            }
+
+            if (this.currentPage > 0) {
+                title = add_if_not_blank(title, title_sep) +
+                        sprintf(this.localization.get("page"), this.currentPage)
+            }
+
+            document.title = add_if_not_blank(title, title_sep) + this.config.get("title");
+        },
+
         render: function() {
-            if (this.collection.size() === 0) {
+            // Do not render the page before there are posts loaded.
+            if (!_.has(this, "collection") || this.collection.size() === 0) {
                 return false;
             }
 
+            // Get the posts that match the current filter.
             var route_prefix = "";
             var per_page = null;
             if (this.kind[0] === "tag" || this.kind[0] === "search") {
@@ -72,6 +149,10 @@ var app = app || {};
                 (this.currentPage + 1) * per_page
             )
 
+            // Set the document title.
+            this.updateTitle(posts_on_current_page);
+
+            // Render the template.
             this.el.innerHTML = this.template({
                 config: this.config.attributes,
                 loc: this.localization.attributes,
@@ -84,6 +165,7 @@ var app = app || {};
                     this.renderPost(post);
                 }, this);
             } else {
+                // Display an appropriate error message if there are no posts to show.
                 if (this.kind[0] === "id") {
                     this.renderError(this.localization.get("entry_not_found"));
                 } else {

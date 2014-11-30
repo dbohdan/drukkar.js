@@ -2,9 +2,8 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>The official Drukkar blog</title>
     <link rel="shortcut icon" href="favicon.ico">
-    <link id="page_style" rel="stylesheet" href="themes/flat/blog.css"><!-- TODO: theme setting. -->
+    <link id="page_style" rel="stylesheet" href="">
 </head>
 <body>
     <script type="text/template" id="post_template">
@@ -19,9 +18,7 @@
             <% if (config.show_dates) { %><p class="date">
                 <%= format_post_date(date, config.date_format, config.time_zone) %>
             </p><% } %>
-            <p class="tags"><%= loc.tags %>: <% var t = _.filter(tags, function(tag) {return !(tag === "_excluded" || tag === "_hidden")}); for (var i = 0; i < t.length; i++) { %>
-                <a href="#/tag/<%= encodeURIComponent(t[i]) %>"><%- t[i] %></a><% if (i !== t.length - 1) { %>, <% } %>
-            <% } %></p>
+            <p class="tags"><%= sprintf(loc.tags, format_post_tags(tags)) %></p>
         </div><!-- .blogentry -->
     </script>
     <script type="text/template" id="error_template">
@@ -75,6 +72,7 @@
     <script type="text/javascript" src="bower_components/backbone/backbone.js"></script>
     <script type="text/javascript" src="bower_components/marked/lib/marked.js"></script>
     <script type="text/javascript" src="bower_components/moment/moment.js"></script>
+    <script type="text/javascript" src="bower_components/sprintf/src/sprintf.js"></script>
     <!-- Application proper. -->
     <script type="text/javascript" src="js/models/post.js"></script>
     <script type="text/javascript" src="js/models/config.js"></script>
