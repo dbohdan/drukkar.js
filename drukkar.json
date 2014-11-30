@@ -10,6 +10,9 @@
   "entries_per_page": 10,
   "entries_per_page_for_tags_and_search": 999,
 
+  "refresh_posts_when_navigating_home": true,
+  "refresh_interval": 60,
+
   "locale": "en",
   "date_format": "DD/MM/YYYY HH:mm:ss",
   "entry_date_from_file_name": false,

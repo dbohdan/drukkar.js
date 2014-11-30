@@ -13,6 +13,11 @@ var app = app || {};
         },
 
         index: function() {
+            // Fetch new posts when the user decides to navigate to the homepage.
+            // This action is rate limited by app.page.collection.fetch itself.
+            if (app.page.config.get("refresh_posts_when_navigating_home")) {
+                app.page.collection.fetch({ reset: true });
+            }
             this.page(0);
         },
 

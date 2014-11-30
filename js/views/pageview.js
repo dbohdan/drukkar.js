@@ -7,9 +7,13 @@ var app = app || {};
         el: "body",
 
         events: {
-            "submit #searchformform": function() {
-                app.router.navigate("/search/" + document.querySelector("#searchfield").value,
-                    {trigger: true});
+            "submit": function() {
+                var query = document.querySelector("#searchfield").value;
+                if (query === "") {
+                    return false;
+                } else {
+                    app.router.navigate("/search/" + query, {trigger: true});
+                }
             }
         },
 
@@ -24,7 +28,6 @@ var app = app || {};
         filter_default: function(post) {
             return !(post.isHidden || post.isExcluded);
         },
-
         currentPage: 0,
 
         initialize: function(options) {
@@ -37,6 +40,11 @@ var app = app || {};
 
             this.collection = new app.PostCollection();
             this.collection.url = this.config.get("entries_dir");
+            this.collection.fetch = _.debounce(
+                this.collection.fetch,
+                this.config.get("refresh_interval") * 1000,
+                true);
+            this.collection.fetch();
 
             var that = this;
             this.collection.on("update", function() {
