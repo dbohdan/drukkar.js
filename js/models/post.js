@@ -41,6 +41,10 @@ var app = app || {};
             return Backbone.Model.prototype.fetch.call(this, options);
         },
 
+        getPlainText: function(attribute) {
+            return _.stripTags(htmlize(this.get(attribute), this.get("format")));
+        },
+
         isHidden: false,
 
         isExcluded: false

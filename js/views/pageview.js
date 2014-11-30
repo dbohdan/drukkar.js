@@ -11,12 +11,16 @@ var app = app || {};
         el: "body",
 
         events: {
-            "submit": function() {
+            "submit": function(e) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                }
+
                 var query = document.querySelector("#searchfield").value;
                 if (query === "") {
                     return false;
                 } else {
-                    app.router.navigate("/search/" + query, {trigger: true});
+                    app.router.navigate("/search/" + encodeURIComponent(query), {trigger: true});
                 }
             }
         },
@@ -57,8 +61,8 @@ var app = app || {};
                 if (post.isHidden) {
                     return false;
                 }
-                var plain_text = post.get("title") +
-                        post.get("text") +
+                var plain_text = post.getPlainText("title") +
+                        post.getPlainText("text") +
                         (post.get("files").join());
                 if (app.page.config.get("show_dates")) {
                     plain_text += format_post_date(
@@ -112,16 +116,16 @@ var app = app || {};
 
             var title = '';
             if (this.kind[0] === "id") {
-                title = posts[0].get("title"); // TODO: strip out HTML, Markdown.
+                title = posts[0].getPlainText("title");
             } else if (this.kind[0] === "search") {
-                title = sprintf(this.localization.get("search_title"), this.kind[1]);
+                title = _.sprintf(this.localization.get("search_title"), this.kind[1]);
             } else if (this.kind[0] === "tag") {
-                title = sprintf(this.localization.get("tag_title"),this.kind[1]);
+                title = _.sprintf(this.localization.get("tag_title"),this.kind[1]);
             }
 
             if (this.currentPage > 0) {
                 title = add_if_not_blank(title, title_sep) +
-                        sprintf(this.localization.get("page"), this.currentPage)
+                        _.sprintf(this.localization.get("page"), this.currentPage)
             }
 
             document.title = add_if_not_blank(title, title_sep) + this.config.get("title");
@@ -150,7 +154,9 @@ var app = app || {};
             )
 
             // Set the document title.
-            this.updateTitle(posts_on_current_page);
+            if (posts_on_current_page.length > 0) {
+                this.updateTitle(posts_on_current_page);
+            }
 
             // Render the template.
             this.el.innerHTML = this.template({
@@ -158,7 +164,8 @@ var app = app || {};
                 loc: this.localization.attributes,
                 page: this.currentPage,
                 max_page: Math.ceil(posts.length / per_page) - 1,
-                route_prefix: route_prefix
+                route_prefix: route_prefix,
+                search_query: (this.kind[0] === "search" ? this.kind[1] : "")
             });
             if (posts_on_current_page.length > 0) {
                 _.each(posts_on_current_page, function(post) {

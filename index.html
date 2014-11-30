@@ -18,7 +18,7 @@
             <% if (config.show_dates) { %><p class="date">
                 <%= format_post_date(date, config.date_format, config.time_zone) %>
             </p><% } %>
-            <p class="tags"><%= sprintf(loc.tags, format_post_tags(tags)) %></p>
+            <p class="tags"><%= _.sprintf(loc.tags, format_post_tags(tags)) %></p>
         </div><!-- .blogentry -->
     </script>
     <script type="text/template" id="error_template">
@@ -40,7 +40,7 @@
             <% if (config.search_enabled) { %><div id="search">
                 <form id="searchformform">
                     <div id="searchform">
-                        <input type="text" name="search" id="searchfield" size=50>&nbsp;
+                        <input type="text" name="search" id="searchfield" size=50 value="<%- search_query %>">&nbsp;
                         <input type="submit" class="button" id="searchbutton" value="<%= loc.search %>">
                     </div><!-- #searchform -->
                 </form>
@@ -72,7 +72,11 @@
     <script type="text/javascript" src="bower_components/backbone/backbone.js"></script>
     <script type="text/javascript" src="bower_components/marked/lib/marked.js"></script>
     <script type="text/javascript" src="bower_components/moment/moment.js"></script>
-    <script type="text/javascript" src="bower_components/sprintf/src/sprintf.js"></script>
+    <script type="text/javascript" src="bower_components/underscore.string/lib/underscore.string.js"></script>
+    <script type="text/javascript">
+        // Mix in non-conflict functions to Underscore namespace.
+        _.mixin(_.str.exports());
+    </script>
     <!-- Application proper. -->
     <script type="text/javascript" src="js/models/post.js"></script>
     <script type="text/javascript" src="js/models/config.js"></script>

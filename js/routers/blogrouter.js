@@ -10,7 +10,7 @@ var app = app || {};
             "tag/:tag(/page/:page)": "tag",
             ":id": "id",
             "search/:query(/page/:page)": "search",
-            "*path": "index"
+            "*path": "id"
         },
 
         index: function() {

@@ -11,7 +11,7 @@
     "jquery": "~2.1.1",
     "marked": "~0.3.2",
     "moment": "~2.8.4",
-    "sprintf": "~1.0.2",
+    "underscore.string": "~2.4.0"
   },
   "license": "MIT",
   "private": true,
