@@ -8,9 +8,9 @@
   "description": "A JavaScript viewer for Drukkar blog posts.",
   "dependencies": {
     "backbone": "~1.1.2",
-    "jquery": "~2.1.1",
-    "marked": "~0.3.2",
-    "moment": "~2.8.4",
+    "jquery": "^2.1.1",
+    "marked": "^0.3.2",
+    "moment": "^2.8.4",
     "underscore.string": "~2.4.0"
   },
   "license": "MIT",
