@@ -40,7 +40,6 @@ var app = app || {};
         },
 
         fetch: function(options) {
-            console.log(this.get("id"));
             options = options || {};
             options.dataType = "xml";
             return Backbone.Model.prototype.fetch.call(this, options);
