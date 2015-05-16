@@ -32,12 +32,10 @@ var app = app || {};
         },
 
         id: function(id) {
-            if (_.has(app.page, "collection")) {
-                app.page.filter = app.PostCollection.prototype.makeFilterId(id);
-                app.page.currentPage = 0;
-                app.page.kind = ["id", id];
-                app.page.render();
-            }
+            app.page.filter = app.PostCollection.prototype.makeFilterId(id);
+            app.page.currentPage = 0;
+            app.page.kind = ["id", id];
+            app.page.render();
         },
 
         tag: function(tag, page) {
