@@ -19,7 +19,7 @@ Changes from Drukkar
 ====================
 
 * The configuration file is called `drukkar.json`. It uses JSON instead of XML.
-* Rather than [PHP date formatting](http://php.net/manual/en/function.date.php) Drukkar.js uses Moment.js [formatting](http://momentjs.com/docs/#/displaying/format/) and [time zone syntax](http://momentjs.com/docs/#/manipulating/timezone-offset/).
+* Rather than [PHP date formatting](http://php.net/manual/en/function.date.php) Drukkar.js uses Moment.js [formatting](http://momentjs.com/docs/#/displaying/format/) and [UTC offset](http://momentjs.com/docs/#/manipulating/utc-offset/) (time zone) syntax.
 * New settings in the config file: `"refresh_posts_when_navigating_home"` and `"refresh_interval"`. If the former is set to `true` Drukkar.js will try to fetch new posts when the user navigates to page zero (the homepage) of the blog but it will do so no more often than every (60 seconds by default).
 
 License

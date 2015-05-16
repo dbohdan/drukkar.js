@@ -14,7 +14,7 @@ var htmlize = function(data, format) {
 
 var format_post_date = function(date, date_format, time_zone) {
     var time_zone = time_zone || "UTC";
-    return moment.unix(parseInt(date, 10)).zone(time_zone).format(date_format);
+    return moment.unix(parseInt(date, 10)).utcOffset(time_zone).format(date_format);
 };
 
 var format_post_tags = function(tags, sep) {
