@@ -25,27 +25,29 @@ var app = app || {};
         },
 
         page: function(page) {
-            app.page.filter = app.page.makeFilterDefault();
+            app.page.filter = app.PostCollection.prototype.makeFilterDefault();
             app.page.currentPage = +page;
             app.page.kind = ["page"];
             app.page.render();
         },
 
         id: function(id) {
-            app.page.filter = app.page.makeFilterId(id);
-            app.page.currentPage = 0;
-            app.page.kind = ["id", id];
-            app.page.render();
+            if (_.has(app.page, "collection")) {
+                app.page.filter = app.PostCollection.prototype.makeFilterId(id);
+                app.page.currentPage = 0;
+                app.page.kind = ["id", id];
+                app.page.render();
+            }
         },
 
         tag: function(tag, page) {
             if (tag === "_excluded" || tag === "_hidden") {
                 // Do not search for the special tags.
-                app.page.filter = function(post) {
-                    return false;
+                app.page.filter = function() {
+                    return [];
                 }
             } else {
-                app.page.filter = app.page.makeFilterTag(tag);
+                app.page.filter = app.PostCollection.prototype.makeFilterTag(tag);
                 app.page.currentPage = +page;
             }
             app.page.kind = ["tag", tag];
@@ -53,7 +55,7 @@ var app = app || {};
         },
 
         search: function(query, page) {
-            app.page.filter = app.page.makeFilterSearch(query.toLowerCase());
+            app.page.filter = app.PostCollection.prototype.makeFilterText(query.toLowerCase());
             app.page.kind = ["search", query];
             app.page.currentPage = +page;
             app.page.render();

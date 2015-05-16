@@ -7,7 +7,7 @@
   "subtitle": "Blog subtitle here",
 
   "theme": "flat",
-  "entries_per_page": 10,
+  "entries_per_page": 2,
   "entries_per_page_for_tags_and_search": 999,
 
   "refresh_posts_when_navigating_home": true,

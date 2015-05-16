@@ -14,7 +14,7 @@ var app = app || {};
 
         render: function() {
             this.el.innerHTML = this.template(
-                _.extend(_.clone(this.model.attributes),{
+                _.extend(_.clone(this.model.attributes), {
                     config: this.config.attributes,
                     loc: this.localization.attributes
                 })

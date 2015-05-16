@@ -8,10 +8,14 @@ var app = app || {};
             title: "",
             text: "",
             format: "html",
-            files: "",
+            files: [],
             date: "0",
-            tags: ""
+            tags: []
         },
+
+        lastUpdated: null,
+
+        refreshInterval: 0,
 
         initialize: function() {
             var that = this;
@@ -36,9 +40,22 @@ var app = app || {};
         },
 
         fetch: function(options) {
+            console.log(this.get("id"));
             options = options || {};
             options.dataType = "xml";
             return Backbone.Model.prototype.fetch.call(this, options);
+        },
+
+        refresh: function(fetchOptions) {
+            var currentSeconds = moment().seconds();
+
+            if (_.isNull(this.lastUpdated) ||
+                    (currentSeconds - this.lastUpdated > this.refreshInterval)) {
+                this.lastUpdated = currentSeconds;
+                return this.fetch(fetchOptions);
+            } else {
+                return $.when();
+            }
         },
 
         getPlainText: function(attribute) {

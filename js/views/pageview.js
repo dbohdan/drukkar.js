@@ -33,49 +33,6 @@ var app = app || {};
 
         filter: null,
 
-        makeFilterDefault: function() {
-            return function(post) {
-                return !(post.isHidden || post.isExcluded);
-            };
-        },
-
-        makeFilterId: function(id) {
-            return function(post) {
-                return post.get("id") === id + ".xml";
-            };
-        },
-
-        makeFilterTag: function(tag) {
-            return function(post) {
-                if (post.isHidden) {
-                    return false;
-                }
-                return _.some(post.attributes.tags, function(post_tag) {
-                    return post_tag === tag;
-                });
-            }
-        },
-
-        makeFilterSearch: function(query) {
-            return function(post) {
-                if (post.isHidden) {
-                    return false;
-                }
-                var plain_text = post.getPlainText("title") +
-                        post.getPlainText("text") +
-                        (post.get("files").join());
-                if (app.page.config.get("show_dates")) {
-                    plain_text += format_post_date(
-                        post.get("date"),
-                        app.page.config.get("date_format"),
-                        app.page.config.get("time_zone")
-                    );
-                }
-                // TODO: strip out HTML and Markdown from text and title.
-                return plain_text.toLowerCase().indexOf(query) > -1;
-            }
-        },
-
         currentPage: 0,
 
         initialize: function(options) {
@@ -90,19 +47,18 @@ var app = app || {};
                 that.localization.fetch();
 
                 // Posts.
-                that.filter = that.filterDefault;
-
                 that.collection = new app.PostCollection();
                 that.collection.url = that.config.get("entries_dir");
                 that.collection.fetch = _.debounce(
                     that.collection.fetch,
                     that.config.get("refresh_interval") * 1000,
                     true);
-                that.collection.fetch();
-
-                that.collection.on("update", function() {
+                that.collection.fetch().done(function() {
                     that.render();
                 });
+
+                that.kind = ["page"];
+                that.filter = that.collection.makeFilterDefault();
             }
 
             // Load blog theme and continue.
@@ -131,63 +87,76 @@ var app = app || {};
             document.title = add_if_not_blank(title, title_sep) + this.config.get("title");
         },
 
+        postsOnCurrentPage: null,
+
         render: function() {
-            // Do not render the page before there are posts loaded.
-            if (!_.has(this, "collection") || this.collection.size() === 0) {
+            var that = this;
+
+            // Do not render the page before the posts list has loaded.
+            if (!_.has(that, "collection")) {
                 return false;
             }
+
+            var cont = function() {
+                var posts = that.filter(that.collection);
+                that.postsOnCurrentPage = posts.slice(
+                    that.currentPage * per_page,
+                    (that.currentPage + 1) * per_page
+                );
+
+                // Set the document title.
+                if (that.postsOnCurrentPage.length > 0) {
+                    that.updateTitle(that.postsOnCurrentPage);
+                }
+
+                // Render the template.
+                that.el.innerHTML = that.template({
+                    config: that.config.attributes,
+                    loc: that.localization.attributes,
+                    page: that.currentPage,
+                    max_page: Math.ceil(posts.length / per_page) - 1,
+                    route_prefix: route_prefix,
+                    search_query: (that.kind[0] === "search" ? that.kind[1] : "")
+                });
+                if (that.postsOnCurrentPage.length > 0) {
+                    // Refresh and render all post for the page.
+                    _.each(that.postsOnCurrentPage, function(post) {
+                        post.refresh().done(function() {
+                            that.renderPost(post);
+                        });
+                    }, that);
+                } else {
+                    // Display an appropriate error message if there are no posts to show.
+                    if (that.kind[0] === "id") {
+                        that.renderError(that.localization.get("entry_not_found"));
+                    } else {
+                        that.renderError(that.localization.get("no_matches"));
+                    }
+                };
+            };
 
             // Get the posts that match the current filter.
             var route_prefix = "";
             var per_page = null;
-            if (this.kind[0] === "tag" || this.kind[0] === "search") {
-                route_prefix = this.kind.join("/") + "/";
-                per_page = this.config.get("entries_per_page_for_tags_and_search");
+            if (that.kind[0] === "tag" || that.kind[0] === "search") {
+                route_prefix = that.kind.join("/") + "/";
+                per_page = that.config.get("entries_per_page_for_tags_and_search");
+                that.collection.fetchItems().done(cont);
             } else {
-                per_page = this.config.get("entries_per_page");
-            }
-
-            var posts = this.collection.filter(this.filter);
-            var posts_on_current_page = posts.slice(
-                this.currentPage * per_page,
-                (this.currentPage + 1) * per_page
-            )
-
-            // Set the document title.
-            if (posts_on_current_page.length > 0) {
-                this.updateTitle(posts_on_current_page);
-            }
-
-            // Render the template.
-            this.el.innerHTML = this.template({
-                config: this.config.attributes,
-                loc: this.localization.attributes,
-                page: this.currentPage,
-                max_page: Math.ceil(posts.length / per_page) - 1,
-                route_prefix: route_prefix,
-                search_query: (this.kind[0] === "search" ? this.kind[1] : "")
-            });
-            if (posts_on_current_page.length > 0) {
-                _.each(posts_on_current_page, function(post) {
-                    this.renderPost(post);
-                }, this);
-            } else {
-                // Display an appropriate error message if there are no posts to show.
-                if (this.kind[0] === "id") {
-                    this.renderError(this.localization.get("entry_not_found"));
-                } else {
-                    this.renderError(this.localization.get("no_matches"));
-                }
+                per_page = that.config.get("entries_per_page");
+                cont();
             }
         },
 
         renderPost: function(item) {
+            var that = this;
+
             var post_view = new app.PostView({
                 model: item
             });
-            post_view.config = this.config;
-            post_view.localization = this.localization;
-            this.append(post_view.render().el);
+            post_view.config = that.config;
+            post_view.localization = that.localization;
+            that.append(post_view.render().el);
         },
 
         renderError: function(message) {
