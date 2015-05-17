@@ -96,11 +96,10 @@ module.exports = Backbone.Collection.extend({
 
     fetchItems: function(options) {
         options = options || {};
-
         var deferreds = this.map(function(post) {
             return post.refresh();
         });
-        return $.when(deferreds);
+        return $.when.apply($, deferreds);
     }
 });
 
@@ -232,7 +231,7 @@ module.exports = Backbone.Router.extend({
             that.navigate("/search/" + encodeURIComponent(query), {
                 trigger: true
             });
-        }
+        };
     },
 
     index: function() {
@@ -323,6 +322,8 @@ module.exports = Backbone.View.extend({
 
     errorTemplate: _.template(document.querySelector("#error_template").textContent),
 
+    kind: null,
+
     filter: null,
 
     currentPage: 0,
@@ -351,8 +352,8 @@ module.exports = Backbone.View.extend({
                 that.render();
             });
 
-            that.kind = ["page"];
-            that.filter = that.collection.makeFilterDefault();
+            that.kind = that.kind || ["page"];
+            that.filter = that.filter || that.collection.makeFilterDefault();
         }
 
         // Load blog theme and continue.
@@ -384,12 +385,12 @@ module.exports = Backbone.View.extend({
     postsOnCurrentPage: null,
 
     render: function() {
-        var that = this;
-
         // Do not render the page before the posts list has loaded.
-        if (!_.has(that, "collection")) {
+        if (!_.has(this, "collection")) {
             return false;
         }
+
+        var that = this;
 
         var cont = function() {
             var posts = that.filter(that.collection);
@@ -18232,14 +18233,16 @@ var BlogRouter = require('./routers/blogrouter');
 
 var config = new Config();
 var config_override = {
-    version: "0.3.0"
+    version: "0.3.1"
 };
 
 config.fetch().then(function() {
     var page = new PageView({config: config});
     var router = new BlogRouter(page);
     config.set(config_override);
-    Backbone.history.start();
+    Backbone.history.start({
+        root: config.get("base_location")
+    });
 });
 
 },{"./models/config":2,"./routers/blogrouter":5,"./views/pageview":6,"backbone":8,"marked":11,"moment":12,"underscore":14,"underscore.string":13}]},{},[15]);

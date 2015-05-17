@@ -38,6 +38,8 @@ module.exports = Backbone.View.extend({
 
     errorTemplate: _.template(document.querySelector("#error_template").textContent),
 
+    kind: null,
+
     filter: null,
 
     currentPage: 0,
@@ -66,8 +68,8 @@ module.exports = Backbone.View.extend({
                 that.render();
             });
 
-            that.kind = ["page"];
-            that.filter = that.collection.makeFilterDefault();
+            that.kind = that.kind || ["page"];
+            that.filter = that.filter || that.collection.makeFilterDefault();
         }
 
         // Load blog theme and continue.
@@ -99,12 +101,12 @@ module.exports = Backbone.View.extend({
     postsOnCurrentPage: null,
 
     render: function() {
-        var that = this;
-
         // Do not render the page before the posts list has loaded.
-        if (!_.has(that, "collection")) {
+        if (!_.has(this, "collection")) {
             return false;
         }
+
+        var that = this;
 
         var cont = function() {
             var posts = that.filter(that.collection);

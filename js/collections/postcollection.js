@@ -95,10 +95,9 @@ module.exports = Backbone.Collection.extend({
 
     fetchItems: function(options) {
         options = options || {};
-
         var deferreds = this.map(function(post) {
             return post.refresh();
         });
-        return $.when(deferreds);
+        return $.when.apply($, deferreds);
     }
 });

@@ -23,7 +23,7 @@ module.exports = Backbone.Router.extend({
             that.navigate("/search/" + encodeURIComponent(query), {
                 trigger: true
             });
-        }
+        };
     },
 
     index: function() {

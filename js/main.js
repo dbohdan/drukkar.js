@@ -13,12 +13,14 @@ var BlogRouter = require('./routers/blogrouter');
 
 var config = new Config();
 var config_override = {
-    version: "0.3.0"
+    version: "0.3.1"
 };
 
 config.fetch().then(function() {
     var page = new PageView({config: config});
     var router = new BlogRouter(page);
     config.set(config_override);
-    Backbone.history.start();
+    Backbone.history.start({
+        root: config.get("base_location")
+    });
 });
