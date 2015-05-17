@@ -1,9 +1,7 @@
-var app = app || {};
+'use strict';
 
-(function() {
-    'use strict';
+var Backbone = require('backbone');
 
-    app.Config = Backbone.Model.extend({
-        url: 'drukkar.json'
-    });
-})();
+module.exports = Backbone.Model.extend({
+    url: 'drukkar.json'
+});

@@ -1,9 +1,7 @@
-var app = app || {};
+'use strict';
 
-(function() {
-    'use strict';
+var Backbone = require('backbone');
 
-    app.Localization = Backbone.Model.extend({
-        url: 'loc_en.json'
-    });
-})();
+module.exports = Backbone.Model.extend({
+    url: 'loc_en.json'
+});

@@ -1,0 +1,42 @@
+{
+  "name": "drukkar",
+  "version": "0.3.0",
+  "description": "A JavaScript viewer for Drukkar blog posts.",
+  "homepage": "https://github.com/dbohdan/drukkar.js",
+  "license": "MIT",
+  "author": {
+    "name": "Danyil Bohdan",
+    "url": "http://danyilbohdan.com/"
+  },
+  "files": [
+    "drukkar.json",
+    "entries/",
+    "favicon.ico",
+    "files/",
+    "index.html",
+    "js/",
+    "loc_en.json",
+    "loc_uk.json",
+    "make-post-list.sh",
+    "themes/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dbohdan/drukkar.js.git"
+  },
+  "dependencies": {
+    "backbone": "^1.1.2",
+    "jquery": "^2.1.1",
+    "marked": "^0.3.2",
+    "moment": "^2.8.4",
+    "underscore.string": "^2.4.0",
+    "underscore": "~1.8.3"
+  },
+  "devDependencies": {
+    "browserify": "latest",
+    "watchify": "latest"
+  },
+  "scripts": {
+    "build-js": "browserify js/main.js > js/drukkar.js"
+  }
+}

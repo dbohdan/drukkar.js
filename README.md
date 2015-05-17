@@ -4,7 +4,7 @@ Usage
 =====
 
 1. Configure Drukkar.js through `drukkar.json`.
-2. Put your posts in `entries/` and files in `files/`.
+2. Put your posts in `entries/` and your files in `files/`.
 3. Run `make-post-list.sh`.
 4. Deploy.
 

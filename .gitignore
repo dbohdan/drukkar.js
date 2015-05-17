@@ -1,2 +1,5 @@
 *.sublime-*
 *-1.06*
+/node_modules/.bin
+/node_modules/browserify
+/node_modules/watchify

@@ -1,62 +1,74 @@
-var app = app || {};
+'use strict';
 
-(function() {
-    'use strict';
+var _ = require('underscore');
+var Backbone = require('backbone');
+var PostCollection = require('../collections/postcollection');
 
-    app.BlogRouter = Backbone.Router.extend({
-        routes: {
-            "": "index",
-            "page/:page": "page",
-            "tag/:tag(/page/:page)": "tag",
-            ":id": "id",
-            "search/:query(/page/:page)": "search",
-            "*path": "id"
-        },
+module.exports = Backbone.Router.extend({
+    pageView: null,
 
-        index: function() {
-            // Fetch new posts when the user decides to navigate to the homepage.
-            // This action is rate limited by app.page.collection.fetch itself.
-            if (_.has(app.page, "collection")) {
-                if (app.page.config.get("refresh_posts_when_navigating_home")) {
-                    app.page.collection.fetch({ reset: true });
-                }
-            }
-            this.page(0);
-        },
+    routes: {
+        "": "index",
+        "page/:page": "page",
+        "tag/:tag(/page/:page)": "tag",
+        ":id": "id",
+        "search/:query(/page/:page)": "search",
+        "*path": "id"
+    },
 
-        page: function(page) {
-            app.page.filter = app.PostCollection.prototype.makeFilterDefault();
-            app.page.currentPage = +page;
-            app.page.kind = ["page"];
-            app.page.render();
-        },
-
-        id: function(id) {
-            app.page.filter = app.PostCollection.prototype.makeFilterId(id);
-            app.page.currentPage = 0;
-            app.page.kind = ["id", id];
-            app.page.render();
-        },
-
-        tag: function(tag, page) {
-            if (tag === "_excluded" || tag === "_hidden") {
-                // Do not search for the special tags.
-                app.page.filter = function() {
-                    return [];
-                }
-            } else {
-                app.page.filter = app.PostCollection.prototype.makeFilterTag(tag);
-                app.page.currentPage = +page;
-            }
-            app.page.kind = ["tag", tag];
-            app.page.render();
-        },
-
-        search: function(query, page) {
-            app.page.filter = app.PostCollection.prototype.makeFilterText(query.toLowerCase());
-            app.page.kind = ["search", query];
-            app.page.currentPage = +page;
-            app.page.render();
+    initialize: function(pageView) {
+        var that = this;
+        this.pageView = pageView;
+        this.pageView.searchHandler = function(query) {
+            that.navigate("/search/" + encodeURIComponent(query), {
+                trigger: true
+            });
         }
-    });
-})();
+    },
+
+    index: function() {
+        // Fetch new posts when the user decides to navigate to the homepage.
+        // This action is rate limited by this.pageView.collection.fetch itself.
+        if (_.has(this.pageView, "collection")) {
+            if (this.pageView.config.get("refresh_posts_when_navigating_home")) {
+                this.pageView.collection.fetch({ reset: true });
+            }
+        }
+        this.page(0);
+    },
+
+    page: function(page) {
+        this.pageView.filter = PostCollection.prototype.makeFilterDefault();
+        this.pageView.currentPage = +page;
+        this.pageView.kind = ["page"];
+        this.pageView.render();
+    },
+
+    id: function(id) {
+        this.pageView.filter = PostCollection.prototype.makeFilterId(id);
+        this.pageView.currentPage = 0;
+        this.pageView.kind = ["id", id];
+        this.pageView.render();
+    },
+
+    tag: function(tag, page) {
+        if (tag === "_excluded" || tag === "_hidden") {
+            // Do not search for the special tags.
+            this.pageView.filter = function() {
+                return [];
+            }
+        } else {
+            this.pageView.filter = PostCollection.prototype.makeFilterTag(tag);
+            this.pageView.currentPage = +page;
+        }
+        this.pageView.kind = ["tag", tag];
+        this.pageView.render();
+    },
+
+    search: function(query, page) {
+        this.pageView.filter = PostCollection.prototype.makeFilterText(query.toLowerCase());
+        this.pageView.kind = ["search", query];
+        this.pageView.currentPage = +page;
+        this.pageView.render();
+    }
+});
