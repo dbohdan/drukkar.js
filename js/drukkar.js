@@ -5807,11 +5807,15 @@ var moment = require('moment');
 var config = m.prop({});
 // The localization strings. Also loaded at the start.
 var loc = m.prop({});
-var version = "0.4.0";
+var version = "0.4.1";
 
 /*
  * Utility functions
  */
+
+var isDefined = function isDefined(x) {
+    return typeof x !== 'undefined';
+};
 
 // Make plain text suitable for m.trust().
 var escapeHtml = function escapeHtml(text) {
@@ -5945,7 +5949,7 @@ RequestCache.request = function (data) {
     var now = Date.now();
     var key = JSON.stringify(data); // Note that this does not cache functions.
 
-    if (typeof this.cache[key] === 'undefined' || now - this.cache[key].updated > config().refresh_interval * 1000) {
+    if (!isDefined(this.cache[key]) || now - this.cache[key].updated > config().refresh_interval * 1000) {
         this.cache[key] = { request: m.request(data), updated: now };
     };
 
@@ -6034,43 +6038,37 @@ var pageView = function pageView(data) {
 var App = {};
 
 App.controller = function () {
-    var page = 0;
-    if (typeof m.route.param('page') !== 'undefined') {
-        page = +m.route.param('page');
+    var pageType = '';
+    if (isDefined(m.route.param('query'))) {
+        pageType = 'search';
+    } else if (isDefined(m.route.param('tag'))) {
+        pageType = 'tag';
+    } else if (isDefined(m.route.param('id'))) {
+        pageType = 'id';
     };
+    var page = isDefined(m.route.param('page')) ? +m.route.param('page') : 0;
     var maxPage = m.prop(null);
-
-    var pageType = null;
     var id = null;
+    var tag = null;
+    var query = null;
+    var searchQueryInput = m.prop('');
     var postList = null;
-    if (typeof m.route.param('id') !== 'undefined') {
+
+    if (pageType === 'id') {
         id = m.route.param('id') + '.xml';
         postList = m.deferred().resolve([{ filename: id, tags: [] }]).promise;
-        pageType = 'id';
     } else {
+        if (pageType === 'tag') {
+            tag = m.route.param('tag');
+        } else if (pageType === 'search') {
+            query = m.route.param('query');
+            searchQueryInput(query);
+        };
         postList = BlogPost.list({ baseUrl: config().base_location + config().entries_dir });
     };
 
-    var tag = null;
-    if (typeof m.route.param('tag') !== 'undefined') {
-        tag = m.route.param('tag');
-        pageType = 'tag';
-    };
-
-    var searchQueryInput = m.prop("");
-    var query = null;
-    if (typeof m.route.param('query') !== 'undefined') {
-        query = m.route.param('query');
-        searchQueryInput(query);
-        pageType = 'search';
-    };
-
-    var from = page * config().entries_per_page;
-    var count = config().entries_per_page;
-    if (pageType === 'search') {
-        from = 0;
-        count = 1000000;
-    }
+    var from = pageType === 'search' ? 0 : page * config().entries_per_page;
+    var count = pageType === 'search' ? 1000000 : config().entries_per_page;
 
     // Remove hidden and (optionally) excluded posts, find posts with a tag.
     var filterMetadata = function filterMetadata(metadata) {
@@ -6176,8 +6174,8 @@ m.request({ url: "drukkar.json" }).then(config).then(function () {
 
     m.route.mode = "hash";
     m.route(document.body, "/", {
-        "/": App,
         "/:id": App,
+        "/": App,
         "/page/:page": App,
         "/tag/:tag": App,
         "/tag/:tag/page/:page": App,

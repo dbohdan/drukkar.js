@@ -18,12 +18,16 @@ let moment = require('moment');
 let config = m.prop({});
 // The localization strings. Also loaded at the start.
 let loc = m.prop({});
-let version = "0.4.0";
+let version = "0.4.1";
 
 
 /*
  * Utility functions
  */
+
+ let isDefined = function (x) {
+    return typeof x !== 'undefined';
+ };
 
 // Make plain text suitable for m.trust().
 let escapeHtml = function (text) {
@@ -159,7 +163,7 @@ RequestCache.request = function (data) {
     let now = Date.now();
     let key = JSON.stringify(data); // Note that this does not cache functions.
 
-    if (typeof this.cache[key] === 'undefined' ||
+    if (!isDefined(this.cache[key]) ||
             now - this.cache[key].updated > config().refresh_interval * 1000) {
         this.cache[key] = { request: m.request(data), updated: now };
     };
@@ -299,44 +303,37 @@ let pageView = function (data) {
 let App = {};
 
 App.controller = function () {
-    let page = 0;
-    if (typeof m.route.param('page') !== 'undefined') {
-        page = +m.route.param('page');
+    let pageType = '';
+    if (isDefined(m.route.param('query'))) {
+        pageType = 'search';
+    } else if (isDefined(m.route.param('tag'))) {
+        pageType = 'tag';
+    } else if (isDefined(m.route.param('id'))) {
+        pageType = 'id';
     };
+    const page = isDefined(m.route.param('page')) ? +m.route.param('page') : 0;
     let maxPage = m.prop(null);
-
-    let pageType = null;
     let id = null;
+    let tag = null;
+    let query = null;
+    let searchQueryInput = m.prop('');
     let postList = null;
-    if (typeof m.route.param('id') !== 'undefined') {
+
+    if (pageType === 'id') {
         id = m.route.param('id') + '.xml';
         postList = m.deferred().resolve([{filename: id, tags: []}]).promise;
-        pageType = 'id';
     } else {
+        if (pageType === 'tag') {
+            tag = m.route.param('tag');
+        } else if (pageType === 'search') {
+            query = m.route.param('query');
+            searchQueryInput(query);
+        };
         postList = BlogPost.list({baseUrl: config().base_location + config().entries_dir});
     };
 
-    let tag = null;
-    if (typeof m.route.param('tag') !== 'undefined') {
-        tag = m.route.param('tag');
-        pageType = 'tag';
-    };
-
-    let searchQueryInput = m.prop("");
-    let query = null;
-    if (typeof m.route.param('query') !== 'undefined') {
-        query = m.route.param('query');
-        searchQueryInput(query);
-        pageType = 'search';
-    };
-
-
-    let from = page * config().entries_per_page;
-    let count = config().entries_per_page;
-    if (pageType === 'search') {
-        from = 0;
-        count = 1000000;
-    }
+    const from = pageType === 'search' ? 0 : page * config().entries_per_page;
+    const count = pageType === 'search' ? 1000000 : config().entries_per_page;
 
     // Remove hidden and (optionally) excluded posts, find posts with a tag.
     let filterMetadata = function (metadata, tag=null, withExcluded=false) {
@@ -433,7 +430,6 @@ App.view = function (ctrl) {
     });
 };
 
-
 // Download the config and the localization then set up routing.
 m.request({url: "drukkar.json"})
     .then(config)
@@ -448,8 +444,8 @@ m.request({url: "drukkar.json"})
 
         m.route.mode = "hash";
         m.route(document.body, "/", {
-            "/": App,
             "/:id": App,
+            "/": App,
             "/page/:page": App,
             "/tag/:tag": App,
             "/tag/:tag/page/:page": App,
