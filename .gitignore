@@ -3,3 +3,5 @@
 /node_modules/.bin
 /node_modules/browserify
 /node_modules/watchify
+/node_modules/babelify
+/node_modules/babel-preset-es2015

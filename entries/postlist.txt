@@ -1,4 +1,0 @@
-0-changelog.xml
-1-manual.xml
-20110323124948-welcome-to-drukkar.xml
-2-hello.xml
