@@ -8,9 +8,6 @@
 
   "theme": "flat",
   "entries_per_page": 2,
-  "entries_per_page_for_tags_and_search": 999,
-
-  "refresh_posts_when_navigating_home": true,
   "refresh_interval": 60,
 
   "locale": "en",
@@ -20,6 +17,12 @@
   "search_enabled": true,
   "navbar_enabled": true,
   "sidebar_enabled": true,
+  "navbar_links": [
+    {"href": "#", "text": "Home"},
+    {"href": "#/1-manual", "text": "Manual"},
+    {"href": "#/0-changelog", "text": "Changelog"}
+  ],
+
   "show_dates": true,
   "time_zone": "UTC"
 }

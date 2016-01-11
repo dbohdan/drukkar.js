@@ -1,6 +1,6 @@
 {
   "name": "drukkar",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "A JavaScript viewer for Drukkar blog posts.",
   "homepage": "https://github.com/dbohdan/drukkar.js",
   "license": "MIT",
@@ -18,7 +18,7 @@
     "loc_en.json",
     "loc_uk.json",
     "Makefile",
-    "make-post-list.sh",
+    "make-post-list.py",
     "themes/"
   ],
   "repository": {
@@ -26,19 +26,18 @@
     "url": "https://github.com/dbohdan/drukkar.js.git"
   },
   "dependencies": {
-    "backbone": "^1.1.2",
-    "jquery": "^2.1.1",
     "marked": "^0.3.2",
-    "moment": "^2.8.4",
-    "underscore.string": "^2.4.0",
-    "underscore": "^1.8.3"
+    "mithril": "^0.2.2",
+    "moment": "^2.8.4"
   },
   "devDependencies": {
     "browserify": "latest",
-    "watchify": "latest"
+    "watchify": "latest",
+    "babelify": "latest",
+    "babel-preset-es2015": "latest"
   },
   "scripts": {
-    "build-js": "browserify js/main.js > js/drukkar.js",
-    "watch-js": "watchify js/main.js -o js/drukkar.js -v"
+    "build-js": "browserify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ]",
+    "watch-js": "watchify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ] -v"
   }
 }

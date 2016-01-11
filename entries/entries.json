@@ -1,0 +1,31 @@
+[
+  {
+    "title": "Changelog", 
+    "tags": [
+      "changelog"
+    ], 
+    "filename": "0-changelog.xml"
+  }, 
+  {
+    "title": "The manual", 
+    "tags": [
+      "manual"
+    ], 
+    "filename": "1-manual.xml"
+  }, 
+  {
+    "title": "Welcome", 
+    "tags": [
+      "hello"
+    ], 
+    "filename": "2-hello.xml"
+  }, 
+  {
+    "title": "Welcome to Drukkar", 
+    "tags": [
+      "sample entry", 
+      "another tag"
+    ], 
+    "filename": "20110323124948-welcome-to-drukkar.xml"
+  }
+]

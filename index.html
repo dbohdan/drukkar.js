@@ -6,65 +6,10 @@
     <link id="page_style" rel="stylesheet" href="">
 </head>
 <body>
-    <script type="text/template" id="post_template">
-        <div class="blogentry">
-            <h2 class="entrytitle"><a class="titlelink" href="#/<%= id.substr(0, id.lastIndexOf('.')) %>"><%= htmlize(title, format) %></a></h2>
-            <div class="text">
-                <%= htmlize(text, format) %>
-            </div><!-- .text -->
-            <p class="files"><% for (var i = 0; i < files.length; i++) { %>
-                <a href="<%= config.files_dir %><%= encodeURIComponent(files[i]) %>"><%- files[i] %></a><br>
-            <% } %></p>
-            <% if (config.show_dates) { %><p class="date">
-                <%= format_post_date(date, config.date_format, config.time_zone) %>
-            </p><% } %>
-            <p class="tags"><%= _.sprintf(loc.tags, format_post_tags(tags)) %></p>
-        </div><!-- .blogentry -->
-    </script>
-    <script type="text/template" id="error_template">
-        <div class="errormessage">
-            <%= message %>
-        </div><!-- .errormessage -->
-    </script>
-    <script type="text/template" id="container_template">
-        <div id="container">
-            <div id="header">
-                <h1 id="title"><a id="blogtitle" href="#"><%= config.title %></a></h1>
-                <% if (config.subtitle !== "") { %><h2 id="subtitle"><%= config.subtitle %></h2><% } %>
-            </div><!-- #header -->
-            <% if (config.navbar_enabled) { %><div id="navbar">
-                <a href="#">Home</a>
-                <a href="#/1-manual">Manual</a>
-                <a href="#/0-changelog">Changelog</a>
-            </div><!-- #navbar --><% } %>
-            <% if (config.search_enabled) { %><div id="search">
-                <form id="searchformform">
-                    <div id="searchform">
-                        <input type="text" name="search" id="searchfield" size=50 value="<%- search_query %>">&nbsp;
-                        <input type="submit" class="button" id="searchbutton" value="<%= loc.search %>">
-                    </div><!-- #searchform -->
-                </form>
-            </div><!-- #search --><% } %>
-            <% if (config.sidebar_enabled) { %><div id="sidebar">
-                <h2>This is your sidebar</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean convallis
-                nibh id ligula placerat, ut rutrum nibh adipiscing.</p>
-            </div><!-- #sidebar --><% } %>
-            <div id="content">
-            <div id="pagelinks">
-                <% if (page > 0) { %>
-                    <a id="prevpagelink" href="#/<%= route_prefix %>page/<%= page - 1 %>"><%= loc.prev_page %></a>
-                <% } %>
-                <% if (page < max_page) { %>
-                    <a id="nextpagelink" href="#/<%= route_prefix %>page/<%= page + 1 %>"><%= loc.next_page %></a>
-                <% } %>
-            </div><!-- #pagelinks -->
-            </div><!-- #content -->
-            <div id="footer">
-                Powered by <a href="https://github.com/dbohdan/drukkar.js">Drukkar.js</a> <%= config.version %>
-                <% if (false) { %>&nbsp;~&nbsp;<a href="rss.php">RSS</a><% } %>
-            </div><!-- #footer -->
-        </div><!-- #container -->
+    <script type="text/template" id="sidebar">
+        <h2>This is your sidebar</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean convallis
+        nibh id ligula placerat, ut rutrum nibh adipiscing.</p>
     </script>
     <script type="text/javascript" src="js/drukkar.js"></script>
 </body>
