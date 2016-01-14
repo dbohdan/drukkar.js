@@ -23,7 +23,7 @@ def main():
         sys.exit('Usage: ' + sys.argv[0] + ' path')
 
     entries_path = sys.argv[1]
-    data = [parse_entry_file(entry_file) for entry_file in list_entry_files(entries_path)[::-1]]
+    data = [parse_entry_file(entry_file) for entry_file in list_entry_files(entries_path)]
     with open(os.path.join(entries_path, 'entries.json'), 'w') as f:
         f.write(json.dumps(data, indent=2, ensure_ascii=False).encode('utf8'))
 

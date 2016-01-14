@@ -1,17 +1,11 @@
 [
   {
-    "title": "Changelog", 
+    "title": "Welcome to Drukkar", 
     "tags": [
-      "changelog"
+      "sample entry", 
+      "another tag"
     ], 
-    "filename": "0-changelog.xml"
-  }, 
-  {
-    "title": "The manual", 
-    "tags": [
-      "manual"
-    ], 
-    "filename": "1-manual.xml"
+    "filename": "20110323124948-welcome-to-drukkar.xml"
   }, 
   {
     "title": "Welcome", 
@@ -21,11 +15,17 @@
     "filename": "2-hello.xml"
   }, 
   {
-    "title": "Welcome to Drukkar", 
+    "title": "The manual", 
     "tags": [
-      "sample entry", 
-      "another tag"
+      "manual"
     ], 
-    "filename": "20110323124948-welcome-to-drukkar.xml"
+    "filename": "1-manual.xml"
+  }, 
+  {
+    "title": "Changelog", 
+    "tags": [
+      "changelog"
+    ], 
+    "filename": "0-changelog.xml"
   }
 ]
