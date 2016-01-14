@@ -99,7 +99,7 @@ let BlogPost = function (data) {
     this.date = m.prop(data.date || "0");
     if (config().entry_date_from_file_name) {
         let datePrefix = this.id().split(/-/)[0];
-        this.date(moment.utc(datePrefix, 'YYYYMMDDHHmm').unix());
+        this.date(moment.utc(datePrefix, 'YYYYMMDDHHmmss').unix());
     };
     this.tags = m.prop(data.tags || []);
 };
