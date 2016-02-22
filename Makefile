@@ -3,4 +3,4 @@ build:
 watch:
 	npm run watch-js
 posts:
-	make-post-list.sh
+	./make-post-list.py entries/
