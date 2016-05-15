@@ -18,7 +18,7 @@ let moment = require('moment');
 let config = m.prop({});
 // The localization strings. Also loaded at the start.
 let loc = m.prop({});
-let version = "0.4.1";
+let version = "0.5.0";
 
 
 /*
@@ -435,7 +435,8 @@ m.request({url: "drukkar.json"})
     .then(config)
     .then(() => {
         // Apply the theme.
-        document.getElementById('page_style').href = `/themes/${config().theme}/blog.css`;
+        document.getElementById('page_style').href = config().base_location +
+            config().themes_dir + config().theme + '/blog.css';
 
         RequestCache.request({
             method: "GET",

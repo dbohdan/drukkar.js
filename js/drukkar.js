@@ -5807,7 +5807,7 @@ var moment = require('moment');
 var config = m.prop({});
 // The localization strings. Also loaded at the start.
 var loc = m.prop({});
-var version = "0.4.1";
+var version = "0.5.0";
 
 /*
  * Utility functions
@@ -6165,7 +6165,7 @@ App.view = function (ctrl) {
 // Download the config and the localization then set up routing.
 m.request({ url: "drukkar.json" }).then(config).then(function () {
     // Apply the theme.
-    document.getElementById('page_style').href = '/themes/' + config().theme + '/blog.css';
+    document.getElementById('page_style').href = config().base_location + config().themes_dir + config().theme + '/blog.css';
 
     RequestCache.request({
         method: "GET",

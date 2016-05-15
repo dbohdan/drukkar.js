@@ -1,6 +1,6 @@
 {
   "name": "drukkar",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "A JavaScript viewer for Drukkar blog posts.",
   "homepage": "https://github.com/dbohdan/drukkar.js",
   "license": "MIT",

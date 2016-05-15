@@ -2,6 +2,7 @@
   "base_location": "/",
   "entries_dir": "entries/",
   "files_dir": "files/",
+  "themes_dir": "themes/",
 
   "title": "Blog title here",
   "subtitle": "Blog subtitle here",
