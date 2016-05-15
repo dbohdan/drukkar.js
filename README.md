@@ -1,9 +1,14 @@
 **Drukkar.js** is an experiment to make a client-side JavaScript-based flat file blog engine that is compatible with [Drukkar](http://drukkar.sourceforge.net/). It is completely compatible with Drukkar's blog post files and attempts to have a configuration format identical to Drukkar's `config.xml` except where it does not make sense. It is currently a prototype.
 
+Live demo
+=========
+
+Available on [GitHub Pages](https://dbohdan.github.io/drukkar.js/).
+
 Usage
 =====
 
-1. Configure Drukkar.js through `drukkar.json`.
+1. Configure Drukkar.js through `drukkar.json`. Be sure to set `base_location` to the correct value for your deployment.
 2. Put your posts in `entries/` and your files in `files/`.
 3. Run `./make-post-list.py entries/`.
 4. Deploy.
