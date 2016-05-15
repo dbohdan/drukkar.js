@@ -1,4 +1,4 @@
-@import url("http://fonts.googleapis.com/css?family=Open+Sans:400,700&subset=latin,cyrillic");
+@import url("//fonts.googleapis.com/css?family=Open+Sans:400,700&subset=latin,cyrillic");
 
 body {
     color: black;
@@ -193,7 +193,7 @@ tt, code, ol.source {
 pre.source {
     overflow: auto;
     white-space: pre-wrap;                  /* CSS 3 browsers  */
-    white-space: -moz-pre-wrap !important; /* 1999+ Mozilla  */
+    white-space: -moz-pre-wrap !important;  /* 1999+ Mozilla  */
     white-space: -pre-wrap;                 /* Opera 4-6 */
     white-space: -o-pre-wrap;               /* Opera 7+ */
     word-wrap: break-word;                  /* IE 5.5+ */
@@ -202,7 +202,7 @@ pre.source {
 ol.source {
     overflow: auto;
     white-space: pre-wrap;                  /* CSS 3 browsers  */
-    white-space: -moz-pre-wrap !important; /* 1999+ Mozilla  */
+    white-space: -moz-pre-wrap !important;  /* 1999+ Mozilla  */
     white-space: -pre-wrap;                 /* Opera 4-6 */
     white-space: -o-pre-wrap;               /* Opera 7+ */
     word-wrap: break-word;                  /* IE 5.5+ */
