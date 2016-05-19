@@ -5807,7 +5807,7 @@ var moment = require('moment');
 var config = m.prop({});
 // The localization strings. Also loaded at the start.
 var loc = m.prop({});
-var version = "0.5.0";
+var version = "0.5.1";
 
 /*
  * Utility functions
