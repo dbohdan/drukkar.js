@@ -18,7 +18,7 @@ let moment = require('moment');
 let config = m.prop({});
 // The localization strings. Also loaded at the start.
 let loc = m.prop({});
-let version = "0.5.1";
+let version = "0.5.2";
 
 
 /*
@@ -67,21 +67,6 @@ let formatDate = function (date) {
     return moment.unix(date)
             .utcOffset(config().time_zone)
             .format(config().date_format);
-};
-
-// Return an array consisting of those elements in arr for which the function test() returns true.
-let filter = function (arr, test=null) {
-    if (test === null) {
-        return arr;
-    };
-
-    let result = [];
-    for (let i = 0; i < arr.length; i++) {
-        if (test(arr[i])) {
-            result.push(arr[i]);
-        };
-    };
-    return result;
 };
 
 
@@ -337,7 +322,7 @@ App.controller = function () {
 
     // Remove hidden and (optionally) excluded posts, find posts with a tag.
     let filterMetadata = function (metadata, tag=null, withExcluded=false) {
-        return filter(metadata, (post) => {
+        return metadata.filter((post) => {
             return (post.tags.indexOf('_hidden') === -1) &&
                     (withExcluded || (post.tags.indexOf('_excluded') === -1)) &&
                     ((tag === null) || post.tags.indexOf(tag) > -1);
@@ -348,7 +333,7 @@ App.controller = function () {
             return posts;
         };
 
-        return filter(posts, (post) => {
+        return posts.filter((post) => {
             let plainText = stripTags(htmlize(post.title(), post.format()) + " " +
                     htmlize(post.text(), post.format())) + " " +
                     post.files().join(" ") + " " +

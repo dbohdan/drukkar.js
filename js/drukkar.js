@@ -5807,7 +5807,7 @@ var moment = require('moment');
 var config = m.prop({});
 // The localization strings. Also loaded at the start.
 var loc = m.prop({});
-var version = "0.5.1";
+var version = "0.5.2";
 
 /*
  * Utility functions
@@ -5851,23 +5851,6 @@ var stripTags = function stripTags(html) {
 // Convert a UNIX date to a string according to the format set in the configuration file.
 var formatDate = function formatDate(date) {
     return moment.unix(date).utcOffset(config().time_zone).format(config().date_format);
-};
-
-// Return an array consisting of those elements in arr for which the function test() returns true.
-var filter = function filter(arr) {
-    var test = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-
-    if (test === null) {
-        return arr;
-    };
-
-    var result = [];
-    for (var i = 0; i < arr.length; i++) {
-        if (test(arr[i])) {
-            result.push(arr[i]);
-        };
-    };
-    return result;
 };
 
 /*
@@ -6075,7 +6058,7 @@ App.controller = function () {
         var tag = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
         var withExcluded = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
-        return filter(metadata, function (post) {
+        return metadata.filter(function (post) {
             return post.tags.indexOf('_hidden') === -1 && (withExcluded || post.tags.indexOf('_excluded') === -1) && (tag === null || post.tags.indexOf(tag) > -1);
         });
     };
@@ -6086,7 +6069,7 @@ App.controller = function () {
             return posts;
         };
 
-        return filter(posts, function (post) {
+        return posts.filter(function (post) {
             var plainText = stripTags(htmlize(post.title(), post.format()) + " " + htmlize(post.text(), post.format())) + " " + post.files().join(" ") + " " + (config().show_dates ? formatDate(post.date()) : "");
             return plainText.toLowerCase().indexOf(query.toLowerCase()) > -1;
         });
