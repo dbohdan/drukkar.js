@@ -18,7 +18,7 @@ let moment = require('moment');
 let config = m.prop({});
 // The localization strings. Also loaded at the start.
 let loc = m.prop({});
-let version = "0.5.2";
+let version = '0.5.2';
 
 
 /*
@@ -31,18 +31,18 @@ let version = "0.5.2";
 
 // Make plain text suitable for m.trust().
 let escapeHtml = function (text) {
-    return text.replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+    return text.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/'/g, '&quot;')
+            .replace(/'/g, '&#039;');
 };
 
 // Convert content to HTML from text or Markdown according to format.
-let htmlize = function (content, format="html") {
-    if (format === "text") {
+let htmlize = function (content, format='html') {
+    if (format === 'text') {
         return escapeHtml(content);
-    } else if (format === "markdown") {
+    } else if (format === 'markdown') {
         return marked(content);
     } else {
         // Assume the data is HTML.
@@ -76,12 +76,12 @@ let formatDate = function (date) {
 
 let BlogPost = function (data) {
     data = data || {};
-    this.id = m.prop(data.id || "");
-    this.title = m.prop(data.title || "");
-    this.text = m.prop(data.text || "");
-    this.format = m.prop(data.format || "html");
+    this.id = m.prop(data.id || '');
+    this.title = m.prop(data.title || '');
+    this.text = m.prop(data.text || '');
+    this.format = m.prop(data.format || 'html');
     this.files = m.prop(data.files || []);
-    this.date = m.prop(data.date || "0");
+    this.date = m.prop(data.date || '0');
     if (config().entry_date_from_file_name) {
         let datePrefix = this.id().split(/-/)[0];
         this.date(moment.utc(datePrefix, 'YYYYMMDDHHmmss').unix());
@@ -93,7 +93,7 @@ let BlogPost = function (data) {
 BlogPost.get = function (data) {
     // Convert an XML DOM to an object.
     let deserialize = (dataToDeserialize) => {
-        let xml = (new DOMParser()).parseFromString(dataToDeserialize, "text/xml");
+        let xml = (new DOMParser()).parseFromString(dataToDeserialize, 'text/xml');
         let map = (arraylike, callback) => {
             let result = [];
             for (var i = 0; i < arraylike.length; i++) {
@@ -117,7 +117,7 @@ BlogPost.get = function (data) {
     };
 
     return RequestCache.request({
-        method: "GET",
+        method: 'GET',
         url: data.url,
         type: BlogPost,
         deserialize
@@ -127,8 +127,8 @@ BlogPost.get = function (data) {
 // data.baseUrl
 BlogPost.list = function (data) {
     return RequestCache.request({
-        method: "GET",
-        url: data.baseUrl + "entries.json",
+        method: 'GET',
+        url: data.baseUrl + 'entries.json',
     });
 };
 
@@ -179,17 +179,17 @@ let postView = function (data) {
     let tagList = [];
     for (let i = 0; i < data.tags().length; i++) {
         let tag = data.tags()[i];
-        if (tag === "_excluded" || tag === "_hidden") {
+        if (tag === '_excluded' || tag === '_hidden') {
             continue;
         };
-        tagList.push(m('a', {href: "#/tag/" + encodeURIComponent(tag)}, tag));
+        tagList.push(m('a', {href: '#/tag/' + encodeURIComponent(tag)}, tag));
         tagList.push(m.trust(', '));
     };
     tagList.pop();
 
     return m('.blogentry', [
         m('h2.entrytitle', [
-            m('a.titlelink', {href: "#/" + data.id().substr(0, data.id().lastIndexOf('.'))},
+            m('a.titlelink', {href: '#/' + data.id().substr(0, data.id().lastIndexOf('.'))},
                     m.trust(htmlize(data.title(), data.format())))
         ]),
         m('.text', m.trust(htmlize(data.text(), data.format()))),
@@ -223,7 +223,7 @@ let pageView = function (data) {
                         m('input#searchfield[type="text"][name="search"]' +
                                 '[id="searchfield"][size="50"]', {
                                 value: data.searchQueryInput(),
-                                onchange: m.withAttr("value", (value) => {
+                                onchange: m.withAttr('value', (value) => {
                                     data.searchQueryInput(value);
                                 }),
                             }),
@@ -252,20 +252,20 @@ let pageView = function (data) {
     let pageLinks = m('#pagelinks', [
         (data.page > 0 ?
             m('a#prevpagelink', {
-                href: pageHrefPrefix + "/page/" + (data.page - 1)
+                href: pageHrefPrefix + '/page/' + (data.page - 1)
             }, loc().prev_page)
             : null),
         (data.page < data.maxPage ?
             m('a#nextpagelink', {
-                href: pageHrefPrefix + "/page/" + (data.page + 1)
+                href: pageHrefPrefix + '/page/' + (data.page + 1)
             }, loc().next_page)
             : null)
     ]);
 
-    return m("#container", [
+    return m('#container', [
         m('#header', [
             m('h1#title', m('a[id="blogtitle][href="#"]', config().title)),
-            m('h2#subtitle', {visible: config().subtitle !== ""}, config().subtitle)
+            m('h2#subtitle', {visible: config().subtitle !== ''}, config().subtitle)
         ]),
         navbar,
         search,
@@ -334,10 +334,10 @@ App.controller = function () {
         };
 
         return posts.filter((post) => {
-            let plainText = stripTags(htmlize(post.title(), post.format()) + " " +
-                    htmlize(post.text(), post.format())) + " " +
-                    post.files().join(" ") + " " +
-                    (config().show_dates ? formatDate(post.date()) : "");
+            let plainText = stripTags(htmlize(post.title(), post.format()) + ' ' +
+                    htmlize(post.text(), post.format())) + ' ' +
+                    post.files().join(' ') + ' ' +
+                    (config().show_dates ? formatDate(post.date()) : '');
             return plainText.toLowerCase().indexOf(query.toLowerCase()) > -1;
         });
     };
@@ -416,7 +416,7 @@ App.view = function (ctrl) {
 };
 
 // Download the config and the localization then set up routing.
-m.request({url: "drukkar.json"})
+m.request({url: 'drukkar.json'})
     .then(config)
     .then(() => {
         // Apply the theme.
@@ -424,18 +424,18 @@ m.request({url: "drukkar.json"})
             config().themes_dir + config().theme + '/blog.css';
 
         RequestCache.request({
-            method: "GET",
+            method: 'GET',
             url: config().base_location + `loc_${config().locale}.json`
         }).then(loc);
 
-        m.route.mode = "hash";
-        m.route(document.body, "/", {
-            "/:id": App,
-            "/": App,
-            "/page/:page": App,
-            "/tag/:tag": App,
-            "/tag/:tag/page/:page": App,
-            "/search/:query": App,
-            "/search/:query/page/:page": App
+        m.route.mode = 'hash';
+        m.route(document.body, '/', {
+            '/:id': App,
+            '/': App,
+            '/page/:page': App,
+            '/tag/:tag': App,
+            '/tag/:tag/page/:page': App,
+            '/search/:query': App,
+            '/search/:query/page/:page': App
         });
     });

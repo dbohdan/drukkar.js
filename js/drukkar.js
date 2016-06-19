@@ -5807,7 +5807,7 @@ var moment = require('moment');
 var config = m.prop({});
 // The localization strings. Also loaded at the start.
 var loc = m.prop({});
-var version = "0.5.2";
+var version = '0.5.2';
 
 /*
  * Utility functions
@@ -5819,16 +5819,16 @@ var isDefined = function isDefined(x) {
 
 // Make plain text suitable for m.trust().
 var escapeHtml = function escapeHtml(text) {
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&quot;').replace(/'/g, '&#039;');
 };
 
 // Convert content to HTML from text or Markdown according to format.
 var htmlize = function htmlize(content) {
-    var format = arguments.length <= 1 || arguments[1] === undefined ? "html" : arguments[1];
+    var format = arguments.length <= 1 || arguments[1] === undefined ? 'html' : arguments[1];
 
-    if (format === "text") {
+    if (format === 'text') {
         return escapeHtml(content);
-    } else if (format === "markdown") {
+    } else if (format === 'markdown') {
         return marked(content);
     } else {
         // Assume the data is HTML.
@@ -5859,12 +5859,12 @@ var formatDate = function formatDate(date) {
 
 var BlogPost = function BlogPost(data) {
     data = data || {};
-    this.id = m.prop(data.id || "");
-    this.title = m.prop(data.title || "");
-    this.text = m.prop(data.text || "");
-    this.format = m.prop(data.format || "html");
+    this.id = m.prop(data.id || '');
+    this.title = m.prop(data.title || '');
+    this.text = m.prop(data.text || '');
+    this.format = m.prop(data.format || 'html');
     this.files = m.prop(data.files || []);
-    this.date = m.prop(data.date || "0");
+    this.date = m.prop(data.date || '0');
     if (config().entry_date_from_file_name) {
         var datePrefix = this.id().split(/-/)[0];
         this.date(moment.utc(datePrefix, 'YYYYMMDDHHmmss').unix());
@@ -5876,7 +5876,7 @@ var BlogPost = function BlogPost(data) {
 BlogPost.get = function (data) {
     // Convert an XML DOM to an object.
     var deserialize = function deserialize(dataToDeserialize) {
-        var xml = new DOMParser().parseFromString(dataToDeserialize, "text/xml");
+        var xml = new DOMParser().parseFromString(dataToDeserialize, 'text/xml');
         var map = function map(arraylike, callback) {
             var result = [];
             for (var i = 0; i < arraylike.length; i++) {
@@ -5902,7 +5902,7 @@ BlogPost.get = function (data) {
     };
 
     return RequestCache.request({
-        method: "GET",
+        method: 'GET',
         url: data.url,
         type: BlogPost,
         deserialize: deserialize
@@ -5912,8 +5912,8 @@ BlogPost.get = function (data) {
 // data.baseUrl
 BlogPost.list = function (data) {
     return RequestCache.request({
-        method: "GET",
-        url: data.baseUrl + "entries.json"
+        method: 'GET',
+        url: data.baseUrl + 'entries.json'
     });
 };
 
@@ -5960,15 +5960,15 @@ var postView = function postView(data) {
     var tagList = [];
     for (var i = 0; i < data.tags().length; i++) {
         var tag = data.tags()[i];
-        if (tag === "_excluded" || tag === "_hidden") {
+        if (tag === '_excluded' || tag === '_hidden') {
             continue;
         };
-        tagList.push(m('a', { href: "#/tag/" + encodeURIComponent(tag) }, tag));
+        tagList.push(m('a', { href: '#/tag/' + encodeURIComponent(tag) }, tag));
         tagList.push(m.trust(', '));
     };
     tagList.pop();
 
-    return m('.blogentry', [m('h2.entrytitle', [m('a.titlelink', { href: "#/" + data.id().substr(0, data.id().lastIndexOf('.')) }, m.trust(htmlize(data.title(), data.format())))]), m('.text', m.trust(htmlize(data.text(), data.format()))), m('p.files', fileList), config().show_dates ? m('p.date', formatDate(data.date())) : null, m('p.tags', substValue(loc().tags, tagList))]);
+    return m('.blogentry', [m('h2.entrytitle', [m('a.titlelink', { href: '#/' + data.id().substr(0, data.id().lastIndexOf('.')) }, m.trust(htmlize(data.title(), data.format())))]), m('.text', m.trust(htmlize(data.text(), data.format()))), m('p.files', fileList), config().show_dates ? m('p.date', formatDate(data.date())) : null, m('p.tags', substValue(loc().tags, tagList))]);
 };
 
 // Format a page worth of blog content.
@@ -5987,7 +5987,7 @@ var pageView = function pageView(data) {
     };
     var search = config().search_enabled ? m('#search', [m('form#searchformform', [m('#searchform', [m('input#searchfield[type="text"][name="search"]' + '[id="searchfield"][size="50"]', {
         value: data.searchQueryInput(),
-        onchange: m.withAttr("value", function (value) {
+        onchange: m.withAttr('value', function (value) {
             data.searchQueryInput(value);
         })
     }), m.trust('&nbsp'), m('input.button#searchbutton[type="submit"]', {
@@ -6006,12 +6006,12 @@ var pageView = function pageView(data) {
         pageHrefPrefix += '/search/' + data.query;
     };
     var pageLinks = m('#pagelinks', [data.page > 0 ? m('a#prevpagelink', {
-        href: pageHrefPrefix + "/page/" + (data.page - 1)
+        href: pageHrefPrefix + '/page/' + (data.page - 1)
     }, loc().prev_page) : null, data.page < data.maxPage ? m('a#nextpagelink', {
-        href: pageHrefPrefix + "/page/" + (data.page + 1)
+        href: pageHrefPrefix + '/page/' + (data.page + 1)
     }, loc().next_page) : null]);
 
-    return m("#container", [m('#header', [m('h1#title', m('a[id="blogtitle][href="#"]', config().title)), m('h2#subtitle', { visible: config().subtitle !== "" }, config().subtitle)]), navbar, search, sidebar, m('#content', data.content.concat(pageLinks)), m('#footer', ['Powered by ', m('a[href="https://github.com/dbohdan/drukkar.js"]', 'Drukkar.js'), ' ', version])]);
+    return m('#container', [m('#header', [m('h1#title', m('a[id="blogtitle][href="#"]', config().title)), m('h2#subtitle', { visible: config().subtitle !== '' }, config().subtitle)]), navbar, search, sidebar, m('#content', data.content.concat(pageLinks)), m('#footer', ['Powered by ', m('a[href="https://github.com/dbohdan/drukkar.js"]', 'Drukkar.js'), ' ', version])]);
 };
 
 /*
@@ -6070,7 +6070,7 @@ App.controller = function () {
         };
 
         return posts.filter(function (post) {
-            var plainText = stripTags(htmlize(post.title(), post.format()) + " " + htmlize(post.text(), post.format())) + " " + post.files().join(" ") + " " + (config().show_dates ? formatDate(post.date()) : "");
+            var plainText = stripTags(htmlize(post.title(), post.format()) + ' ' + htmlize(post.text(), post.format())) + ' ' + post.files().join(' ') + ' ' + (config().show_dates ? formatDate(post.date()) : '');
             return plainText.toLowerCase().indexOf(query.toLowerCase()) > -1;
         });
     };
@@ -6146,24 +6146,24 @@ App.view = function (ctrl) {
 };
 
 // Download the config and the localization then set up routing.
-m.request({ url: "drukkar.json" }).then(config).then(function () {
+m.request({ url: 'drukkar.json' }).then(config).then(function () {
     // Apply the theme.
     document.getElementById('page_style').href = config().base_location + config().themes_dir + config().theme + '/blog.css';
 
     RequestCache.request({
-        method: "GET",
+        method: 'GET',
         url: config().base_location + ('loc_' + config().locale + '.json')
     }).then(loc);
 
-    m.route.mode = "hash";
-    m.route(document.body, "/", {
-        "/:id": App,
-        "/": App,
-        "/page/:page": App,
-        "/tag/:tag": App,
-        "/tag/:tag/page/:page": App,
-        "/search/:query": App,
-        "/search/:query/page/:page": App
+    m.route.mode = 'hash';
+    m.route(document.body, '/', {
+        '/:id': App,
+        '/': App,
+        '/page/:page': App,
+        '/tag/:tag': App,
+        '/tag/:tag/page/:page': App,
+        '/search/:query': App,
+        '/search/:query/page/:page': App
     });
 });
 
