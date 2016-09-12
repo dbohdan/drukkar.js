@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "marked": "^0.3.2",
-    "mithril": "^0.2.2",
+    "mithril": "^0.2.5",
     "moment": "^2.8.4"
   },
   "devDependencies": {
