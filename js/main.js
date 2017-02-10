@@ -457,7 +457,7 @@ let Timeline = {
 
         const key = 'timeline:page=' + vnode.state.page +
                     (vnode.attrs.tag === null ? '' : 'tag=' + vnode.state.tag);
-        m.route.set(m.route.get(), null, {state: {key}});
+        m.route.set(m.route.get(), null, {replace: true, state: {key}});
 
         return PostList.fetch(postList().baseUrl).then(postList).then(() => {
             const {data, maxPage} =
@@ -493,7 +493,7 @@ let SinglePost = {
 
         const filename = vnode.attrs.id + '.xml';
         const key = 'post:filename=' + filename;
-        m.route.set(m.route.get(), null, {state: {key}});
+        m.route.set(m.route.get(), null, {replace: true, state: {key}});
 
         return PostList.fetch(postList().baseUrl).then(postList).then(() => {
             return postList().postByFilename(filename);
@@ -517,7 +517,7 @@ let Search = {
         vnode.state.query = vnode.attrs.query || '';
 
         const key = 'search:query=' + vnode.state.query;
-        m.route.set(m.route.get(), null, {state: {key}});
+        m.route.set(m.route.get(), null, {replace: true, state: {key}});
 
         return PostList.fetch(postList().baseUrl).then(postList).then(() => {
             return postList().search(vnode.state.query);

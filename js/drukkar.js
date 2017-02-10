@@ -447,7 +447,7 @@ var Timeline = {
         vnode.state.pageType = vnode.state.tag === null ? 'timeline' : 'tag';
 
         var key = 'timeline:page=' + vnode.state.page + (vnode.attrs.tag === null ? '' : 'tag=' + vnode.state.tag);
-        m.route.set(m.route.get(), null, { state: { key: key } });
+        m.route.set(m.route.get(), null, { replace: true, state: { key: key } });
 
         return PostList.fetch(postList().baseUrl).then(postList).then(function () {
             var _postList$page = postList().page(vnode.state.page, vnode.state.tag),
@@ -483,7 +483,7 @@ var SinglePost = {
 
         var filename = vnode.attrs.id + '.xml';
         var key = 'post:filename=' + filename;
-        m.route.set(m.route.get(), null, { state: { key: key } });
+        m.route.set(m.route.get(), null, { replace: true, state: { key: key } });
 
         return PostList.fetch(postList().baseUrl).then(postList).then(function () {
             return postList().postByFilename(filename);
@@ -506,7 +506,7 @@ var Search = {
         vnode.state.query = vnode.attrs.query || '';
 
         var key = 'search:query=' + vnode.state.query;
-        m.route.set(m.route.get(), null, { state: { key: key } });
+        m.route.set(m.route.get(), null, { replace: true, state: { key: key } });
 
         return PostList.fetch(postList().baseUrl).then(postList).then(function () {
             return postList().search(vnode.state.query);
