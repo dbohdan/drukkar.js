@@ -361,12 +361,12 @@ const pageView = ({content, maxPage, page, pageType, query,
     const pageLinks = m('#pagelinks', [
         (page > 0 ?
             m('a#prevpagelink', {
-                href: pageHrefPrefix + '/page/' + (page - 1)
+                href: pageHrefPrefix + (page == 1 ? '' : '/page/' + page)
             }, loc().prev_page)
             : null),
         (page < maxPage ?
             m('a#nextpagelink', {
-                href: pageHrefPrefix + '/page/' + (page + 1)
+                href: pageHrefPrefix + '/page/' + (page + 2)
             }, loc().next_page)
             : null)
     ]);
@@ -451,7 +451,7 @@ const blogView = ({error, maxPage, pageType, page, posts, query,
 let Timeline = {
     oninit(vnode) {
         vnode.state.error = false;
-        vnode.state.page = +vnode.attrs.page || 0;
+        vnode.state.page = +(vnode.attrs.page || 1) - 1;
         vnode.state.tag = vnode.attrs.tag || null;
         vnode.state.pageType = vnode.state.tag === null ? 'timeline' : 'tag';
 

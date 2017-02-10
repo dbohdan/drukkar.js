@@ -368,9 +368,9 @@ var pageView = function pageView(_ref2) {
     };
 
     var pageLinks = m('#pagelinks', [page > 0 ? m('a#prevpagelink', {
-        href: pageHrefPrefix + '/page/' + (page - 1)
+        href: pageHrefPrefix + (page == 1 ? '' : '/page/' + page)
     }, loc().prev_page) : null, page < maxPage ? m('a#nextpagelink', {
-        href: pageHrefPrefix + '/page/' + (page + 1)
+        href: pageHrefPrefix + '/page/' + (page + 2)
     }, loc().next_page) : null]);
 
     return m('#container', [m('#header', [m('h1#title', m('a[id="blogtitle"][href="#!/"]', config().title)), m('h2#subtitle', { visible: config().subtitle !== '' }, config().subtitle)]), navbar, search, sidebar, m('#content', content.concat(pageLinks)), m('#footer', ['Powered by ', m('a[href="https://github.com/dbohdan/drukkar.js"]', 'Drukkar.js'), ' ', version])]);
@@ -442,7 +442,7 @@ var blogView = function blogView(_ref3) {
 var Timeline = {
     oninit: function oninit(vnode) {
         vnode.state.error = false;
-        vnode.state.page = +vnode.attrs.page || 0;
+        vnode.state.page = +(vnode.attrs.page || 1) - 1;
         vnode.state.tag = vnode.attrs.tag || null;
         vnode.state.pageType = vnode.state.tag === null ? 'timeline' : 'tag';
 
