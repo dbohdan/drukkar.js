@@ -1,12 +1,12 @@
 {
   "name": "drukkar",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "A JavaScript viewer for Drukkar blog posts.",
   "homepage": "https://github.com/dbohdan/drukkar.js",
   "license": "MIT",
   "author": {
-    "name": "Danyil Bohdan",
-    "url": "http://danyilbohdan.com/"
+    "name": "dbohdan",
+    "url": "http://github.com/dbohdan"
   },
   "files": [
     "drukkar.json",
@@ -26,15 +26,15 @@
     "url": "https://github.com/dbohdan/drukkar.js.git"
   },
   "dependencies": {
-    "marked": "^0.3.2",
-    "mithril": "^0.2.5",
-    "moment": "^2.8.4"
+    "marked": "^0.3.6",
+    "mithril": "^1.0.0",
+    "moment": "^2.17.1"
   },
   "devDependencies": {
-    "browserify": "latest",
-    "watchify": "latest",
+    "babel-preset-es2015": "latest",
     "babelify": "latest",
-    "babel-preset-es2015": "latest"
+    "browserify": "latest",
+    "watchify": "latest"
   },
   "scripts": {
     "build-js": "browserify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ]",

@@ -1,7 +1,6 @@
 *.sublime-*
 *-1.06*
-/node_modules/.bin
-/node_modules/browserify
-/node_modules/watchify
-/node_modules/babelify
-/node_modules/babel-preset-es2015
+/node_modules
+!/node_modules/marked
+!/node_modules/mithril
+!/node_modules/moment

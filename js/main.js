@@ -5,9 +5,10 @@
  * Modules
  */
 
-let m = require('mithril');
-let marked = require('marked');
-let moment = require('moment');
+const m = require('mithril');
+const marked = require('marked');
+const moment = require('moment');
+const Stream = require('mithril/stream');
 
 
 /*
@@ -15,23 +16,27 @@ let moment = require('moment');
  */
 
 // Application configuration. Loaded once at the start.
-let config = m.prop({});
-// The localization strings. Also loaded at the start.
-let loc = m.prop({});
-let version = '0.5.2';
+const config = Stream({});
+// The localization strings. Also loaded once at the start.
+const loc = Stream({});
+// After initialization contains a PostList object. The object is preserved when
+// switching components.
+const postList = Stream({});
+// The search query input. Preserved when switching components.
+const searchQueryInput = Stream('');
+const version = '0.6.0';
 
 
 /*
  * Utility functions
  */
 
- let isDefined = function (x) {
-    return typeof x !== 'undefined';
- };
+const isDefined = (x) => typeof x !== 'undefined';
 
 // Make plain text suitable for m.trust().
-let escapeHtml = function (text) {
-    return text.replace(/&/g, '&amp;')
+const escapeHtml = (text) => {
+    return text
+            .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/'/g, '&quot;')
@@ -39,7 +44,7 @@ let escapeHtml = function (text) {
 };
 
 // Convert content to HTML from text or Markdown according to format.
-let htmlize = function (content, format='html') {
+const htmlize = (content, format='html') => {
     if (format === 'text') {
         return escapeHtml(content);
     } else if (format === 'markdown') {
@@ -50,86 +55,20 @@ let htmlize = function (content, format='html') {
     }
 };
 
-let substValue = function (locStr, value) {
-    let arr = locStr.split('%s', 2);
-    return [m.trust(arr[0]), value, m.trust(arr[1])];
-};
-
 // Return the plain text contained in html without the tags.
-let stripTags = function (html) {
-    let div = document.createElement('div');
+const stripTags = (html) => {
+    const div = document.createElement('div');
     div.innerHTML = html;
     return div.textContent || '';
 };
 
-// Convert a UNIX date to a string according to the format set in the configuration file.
-let formatDate = function (date) {
-    return moment.unix(date)
+// Convert a UNIX date to a string according to the format set in the
+// configuration file.
+const formatDate = (date) => {
+    return moment
+            .unix(date)
             .utcOffset(config().time_zone)
             .format(config().date_format);
-};
-
-
-/*
- * BlogPost - the blog entry model
- */
-
-let BlogPost = function (data) {
-    data = data || {};
-    this.id = m.prop(data.id || '');
-    this.title = m.prop(data.title || '');
-    this.text = m.prop(data.text || '');
-    this.format = m.prop(data.format || 'html');
-    this.files = m.prop(data.files || []);
-    this.date = m.prop(data.date || '0');
-    if (config().entry_date_from_file_name) {
-        let datePrefix = this.id().split(/-/)[0];
-        this.date(moment.utc(datePrefix, 'YYYYMMDDHHmmss').unix());
-    };
-    this.tags = m.prop(data.tags || []);
-};
-
-// Load a BlogPost from data.url. Returns an m.request.
-BlogPost.get = function (data) {
-    // Convert an XML DOM to an object.
-    let deserialize = (dataToDeserialize) => {
-        let xml = (new DOMParser()).parseFromString(dataToDeserialize, 'text/xml');
-        let map = (arraylike, callback) => {
-            let result = [];
-            for (var i = 0; i < arraylike.length; i++) {
-                result.push(callback(arraylike[i]));
-            }
-            return result;
-        };
-        let getAllValues = (nodes) => {
-            return map(nodes, (el) => { return el.textContent })
-        }
-        let result = {};
-
-        map(xml.querySelectorAll('entry > :not(file):not(tag)'), (el) => {
-            result[el.tagName] = el.textContent
-        });
-        result.files = getAllValues(xml.querySelectorAll('entry > file'));
-        result.tags = getAllValues(xml.querySelectorAll('entry > tag'));
-        result.id = data.url.substr(data.url.lastIndexOf('/') + 1);
-
-        return result;
-    };
-
-    return RequestCache.request({
-        method: 'GET',
-        url: data.url,
-        type: BlogPost,
-        deserialize
-    });
-};
-
-// data.baseUrl
-BlogPost.list = function (data) {
-    return RequestCache.request({
-        method: 'GET',
-        url: data.baseUrl + 'entries.json',
-    });
 };
 
 
@@ -137,23 +76,188 @@ BlogPost.list = function (data) {
  * RequestCache - a caching m.request wrapper
  */
 
-let RequestCache = {
-    cache: {}
+const RequestCache = {
+    cache: {},
+
+    // Return a cached version of an m.request with the parameters in data if
+    // the cache is fresh (no older than config().refresh_interval seconds);
+    // otherwise, make a new request and return it.
+    request(data) {
+        const now = Date.now();
+        // Note that we do not cache functions.
+        const key = JSON.stringify(data);
+
+        if (!isDefined(this.cache[key]) || now - this.cache[key].updated >
+                                           config().refresh_interval * 1000) {
+            this.cache[key] = {
+                updated: now,
+                request: m.request(data),
+            };
+        };
+
+        return this.cache[key].request;
+    }
 };
-// Return a cached version of an m.request with the parameters in data if the cache is fresh (no
-// older than config().refresh_interval seconds); otherwise, make a new request and return it.
-RequestCache.request = function (data) {
-    //return m.request(data);
 
-    let now = Date.now();
-    let key = JSON.stringify(data); // Note that this does not cache functions.
 
-    if (!isDefined(this.cache[key]) ||
-            now - this.cache[key].updated > config().refresh_interval * 1000) {
-        this.cache[key] = { request: m.request(data), updated: now };
+/*
+ * Post - the blog entry model
+ */
+
+class Post {
+    constructor(data) {
+        data = data || {};
+        this.filename = data.filename || '';
+        this.title = data.title || '';
+        this.text = data.text || '';
+        this.format = data.format || 'html';
+        this.files = data.files || [];
+        this.date = data.date || '0';
+        if (config().entry_date_from_file_name) {
+            const datePrefix = this.filename.split(/-/)[0];
+            this.date(moment.utc(datePrefix, 'YYYYMMDDHHmmss').unix());
+        };
+        this.tags = data.tags || [];
     };
 
-    return this.cache[key].request;
+    // Load a Post from url. Returns an m.request.
+    static fetch(url) {
+        // Convert an XML DOM for a blog entry to an object.
+        const deserialize = (dataToDeserialize) => {
+            const xml = (new DOMParser()).parseFromString(dataToDeserialize,
+                                                        'text/xml');
+            const map = (arraylike, callback) => {
+                const result = [];
+                for (var i = 0; i < arraylike.length; i++) {
+                    result.push(callback(arraylike[i]));
+                }
+                return result;
+            };
+            const getAllValues = (nodes) => {
+                return map(nodes, (el) => { return el.textContent })
+            }
+            const result = {};
+
+            map(xml.querySelectorAll('entry > :not(file):not(tag)'), (el) => {
+                result[el.tagName] = el.textContent
+            });
+            result.files = getAllValues(xml.querySelectorAll('entry > file'));
+            result.tags = getAllValues(xml.querySelectorAll('entry > tag'));
+            result.filename = url.substr(url.lastIndexOf('/') + 1);
+
+            return result;
+        };
+
+        return RequestCache.request({
+            deserialize,
+            method: 'GET',
+            type: Post,
+            url: url,
+        });
+    };
+};
+
+
+/*
+ * PostList - a lazy loaded post collection
+ */
+
+class PostList {
+    constructor({baseUrl, posts}) {
+        this.baseUrl = baseUrl;
+        this.posts = posts;
+        this._reindex();
+    };
+
+    _reindex() {
+        this.index = {};
+        for (let i = 0; i < this.posts.length; i++) {
+            this.index[this.posts[i].filename] = i;
+        };
+    };
+
+    filter(tag=null, withExcluded=false) {
+        return this.posts.filter((post) => {
+            return (post.tags.indexOf('_hidden') === -1) &&
+                   (withExcluded || (post.tags.indexOf('_excluded') === -1)) &&
+                   ((tag === null) || post.tags.indexOf(tag) > -1);
+        });
+    };
+
+    filenameToIndex(filename, appendExt=false) {
+        const key = filename + (appendExt ? '.xml' : '');
+        return key in this.index ? this.index[key] : -1;
+    };
+
+    loadFullPost(index) {
+        if (index < 0 || index >= this.posts.length) {
+            return Promise.reject('wrong index');
+        }
+        return Post.fetch(this.baseUrl + this.posts[index].filename).then(
+            (x) => {
+                this.posts[index] = x;
+                return x;
+            }
+        );
+    };
+
+    page(n, tag=null) {
+        const from = n * config().entries_per_page;
+        const to = from + config().entries_per_page;
+
+        const filtered = this.filter(tag, (tag !== null));
+        const maxPage =
+            Math.ceil(filtered.length / config().entries_per_page) - 1;
+        const data = Promise.all(filtered.slice(from, to).map((post) => {
+            return this.loadFullPost(this.filenameToIndex(post.filename));
+        }));
+        return {data, maxPage};
+    };
+
+    postByFilename(filename) {
+        return this.loadFullPost(this.filenameToIndex(filename));
+    };
+
+    // Full text search.
+    search(query=null) {
+        let promises = [];
+        for (let i = 0; i < this.posts.length; i++) {
+            promises.push(this.loadFullPost(i));
+        };
+
+        return Promise.all(promises).then((posts) => {
+            return posts.filter((post) => {
+                const plainText =
+                    stripTags(
+                        htmlize(post.title, post.format) + ' ' +
+                        htmlize(post.text, post.format)
+                    ) + ' ' +
+                    post.files.join(' ') + ' ' +
+                    (config().show_dates ? formatDate(post.date) : '');
+                return plainText.toLowerCase().indexOf(
+                    query.toLowerCase()
+                ) > -1;
+            });
+        });
+    };
+
+    static fetch(baseUrl) {
+        const deserialize = (dataToDeserialize) => {
+            const postStubs = JSON.parse(dataToDeserialize);
+            for (let i = 0; i < postStubs.length; i++) {
+                postStubs[i].stub = true;
+            };
+
+            return {baseUrl, posts: postStubs};
+        };
+
+        return RequestCache.request({
+            deserialize,
+            method: 'GET',
+            type: PostList,
+            url: baseUrl + 'entries.json',
+        });
+    };
 };
 
 
@@ -161,116 +265,125 @@ RequestCache.request = function (data) {
  * Views
  */
 
-// data.message
-let errorView = function (data) {
-    return m('.errormessage', data.message);
+const errorView = (message) => {
+    return m('.errormessage', message);
 };
 
-
-// Format an individual blog post. Data is a BlogPost object.
-let postView = function (data) {
-    let fileList = [];
-    for (let i = 0; i < data.files().length; i++) {
-        let file = data.files()[i];
-        fileList.push(m('a', {href: config().files_dir + encodeURIComponent(file)}, file));
+// Format an individual blog post. post is a Post object.
+const postView = (post) => {
+    const fileList = [];
+    for (let i = 0; i < post.files.length; i++) {
+        const file = post.files[i];
+        fileList.push(m('a', {
+            href: config().files_dir + encodeURIComponent(file)
+        }, file));
         fileList.push(m('br'));
     };
 
-    let tagList = [];
-    for (let i = 0; i < data.tags().length; i++) {
-        let tag = data.tags()[i];
+    const tagList = [];
+    for (let i = 0; i < post.tags.length; i++) {
+        const tag = post.tags[i];
         if (tag === '_excluded' || tag === '_hidden') {
             continue;
         };
-        tagList.push(m('a', {href: '#/tag/' + encodeURIComponent(tag)}, tag));
+        tagList.push(m('a', {
+            href: '#!/tag/' + encodeURIComponent(tag)
+        }, tag));
         tagList.push(m.trust(', '));
     };
     tagList.pop();
 
+    const substValue = (locStr, value) => {
+        const arr = locStr.split('%s', 2);
+        return [m.trust(arr[0]), value, m.trust(arr[1])];
+    };
+
     return m('.blogentry', [
         m('h2.entrytitle', [
-            m('a.titlelink', {href: '#/' + data.id().substr(0, data.id().lastIndexOf('.'))},
-                    m.trust(htmlize(data.title(), data.format())))
+            m('a.titlelink', {
+                href: '#!/' + post.filename.substr(
+                    0, post.filename.lastIndexOf('.')
+                )
+            }, m.trust(htmlize(post.title, post.format)))
         ]),
-        m('.text', m.trust(htmlize(data.text(), data.format()))),
+        m('.text', m.trust(htmlize(post.text, post.format))),
         m('p.files', fileList),
-        (config().show_dates ? m('p.date', formatDate(data.date())) : null),
+        (config().show_dates ? m('p.date', formatDate(post.date)) : null),
         m('p.tags', substValue(loc().tags, tagList))
     ]);
 };
 
-
 // Format a page worth of blog content.
-// data.page
-// data.maxPage
-// data.content
-// data.tag
-// data.query
-// data.searchQueryInput
-let pageView = function (data) {
-    let navbar = config().navbar_enabled ?
+const pageView = ({content, maxPage, page, pageType, query,
+                          searchQueryInput, tag}) => {
+    const navbar = config().navbar_enabled ?
             m('#navbar', config().navbar_links.map((item) => {
                 return m('a', {href: item.href}, item.text);
             }))
             : null;
-    let searchRoute = function () {
-        m.route('/search/' + data.searchQueryInput());
-    };
-    let search = config().search_enabled ?
+    const search = config().search_enabled ?
             m('#search', [
-                m('form#searchformform', [
+                m('form#searchformform', {
+                    onsubmit(e) {
+                        e.preventDefault();
+                        if (searchQueryInput() !== '') {
+                            m.route.set('/search/' + searchQueryInput());
+                        };
+                        return false;
+                    }},[
                     m('#searchform', [
                         m('input#searchfield[type="text"][name="search"]' +
-                                '[id="searchfield"][size="50"]', {
-                                value: data.searchQueryInput(),
-                                onchange: m.withAttr('value', (value) => {
-                                    data.searchQueryInput(value);
-                                }),
+                          '[id="searchfield"][size="50"]', {
+                            value: searchQueryInput(),
+                            onchange: m.withAttr('value', (value) => {
+                                searchQueryInput(value);
                             }),
+                        }),
                         m.trust('&nbsp'),
                         m('input.button#searchbutton[type="submit"]', {
-                            onclick: () => {
-                                searchRoute();
-                                return false;
-                            },
                             value: loc().search
                         })
                     ])
                 ])
             ])
             : null;
-    let sidebar = config().sidebar_enabled ?
-            m('#sidebar', m.trust(document.getElementById('sidebar').innerHTML))
-            : null;
+    const sidebar = config().sidebar_enabled ?
+                  m('#sidebar', m.trust(config().sidebar))
+                  : null;
 
-    let pageHrefPrefix = '#';
-    if (data.pageType === 'tag') {
-        pageHrefPrefix += '/tag/' + data.tag;
-    } else if (data.pageType === 'search') {
-        pageHrefPrefix += '/search/' + data.query;
+    let pageHrefPrefix = '#!';
+    if (pageType === 'tag') {
+        pageHrefPrefix += '/tag/' + tag;
+    } else if (pageType === 'search') {
+        pageHrefPrefix += '/search/' + query;
     };
-    let pageLinks = m('#pagelinks', [
-        (data.page > 0 ?
+
+    const pageLinks = m('#pagelinks', [
+        (page > 0 ?
             m('a#prevpagelink', {
-                href: pageHrefPrefix + '/page/' + (data.page - 1)
+                href: pageHrefPrefix + '/page/' + (page - 1)
             }, loc().prev_page)
             : null),
-        (data.page < data.maxPage ?
+        (page < maxPage ?
             m('a#nextpagelink', {
-                href: pageHrefPrefix + '/page/' + (data.page + 1)
+                href: pageHrefPrefix + '/page/' + (page + 1)
             }, loc().next_page)
             : null)
     ]);
 
     return m('#container', [
         m('#header', [
-            m('h1#title', m('a[id="blogtitle][href="#"]', config().title)),
-            m('h2#subtitle', {visible: config().subtitle !== ''}, config().subtitle)
+            m('h1#title', m('a[id="blogtitle"][href="#!/"]', config().title)),
+            m(
+                'h2#subtitle',
+                {visible: config().subtitle !== ''},
+                config().subtitle
+            )
         ]),
         navbar,
         search,
         sidebar,
-        m('#content', data.content.concat(pageLinks)),
+        m('#content', content.concat(pageLinks)),
         m('#footer', [
             'Powered by ',
             m('a[href="https://github.com/dbohdan/drukkar.js"]', 'Drukkar.js'),
@@ -280,125 +393,41 @@ let pageView = function (data) {
     ]);
 };
 
-
-/*
- * App - the application core
- */
-
-let App = {};
-
-App.controller = function () {
-    let pageType = '';
-    if (isDefined(m.route.param('query'))) {
-        pageType = 'search';
-    } else if (isDefined(m.route.param('tag'))) {
-        pageType = 'tag';
-    } else if (isDefined(m.route.param('id'))) {
-        pageType = 'id';
-    };
-    const page = isDefined(m.route.param('page')) ? +m.route.param('page') : 0;
-    let maxPage = m.prop(null);
-    let id = null;
-    let tag = null;
-    let query = null;
-    let searchQueryInput = m.prop('');
-    let postList = null;
-
-    if (pageType === 'id') {
-        id = m.route.param('id') + '.xml';
-        postList = m.deferred().resolve([{filename: id, tags: []}]).promise;
-    } else {
-        if (pageType === 'tag') {
-            tag = m.route.param('tag');
-        } else if (pageType === 'search') {
-            query = m.route.param('query');
-            searchQueryInput(query);
-        };
-        postList = BlogPost.list({baseUrl: config().base_location + config().entries_dir});
-    };
-
-    const from = pageType === 'search' ? 0 : page * config().entries_per_page;
-    const count = pageType === 'search' ? 1000000 : config().entries_per_page;
-
-    // Remove hidden and (optionally) excluded posts, find posts with a tag.
-    let filterMetadata = function (metadata, tag=null, withExcluded=false) {
-        return metadata.filter((post) => {
-            return (post.tags.indexOf('_hidden') === -1) &&
-                    (withExcluded || (post.tags.indexOf('_excluded') === -1)) &&
-                    ((tag === null) || post.tags.indexOf(tag) > -1);
-        });
-    };
-    let filterByText = function (posts, query=null) {
-        if (query === null) {
-            return posts;
-        };
-
-        return posts.filter((post) => {
-            let plainText = stripTags(htmlize(post.title(), post.format()) + ' ' +
-                    htmlize(post.text(), post.format())) + ' ' +
-                    post.files().join(' ') + ' ' +
-                    (config().show_dates ? formatDate(post.date()) : '');
-            return plainText.toLowerCase().indexOf(query.toLowerCase()) > -1;
-        });
-    };
-    let postsFromMetadata = function (metadata, from, count) {
-        let requests = metadata.slice(from, from + count).map((post) => {
-            return BlogPost.get({
-                url: config().base_location + config().entries_dir + post.filename
-            });
-        });
-        return m.sync(requests);
-    };
-
-    let posts = postList.then((metadata) => {
-        let filtered = filterMetadata(metadata, tag, (tag !== null) || (query !== null));
-        return postsFromMetadata(filtered, from, count).then(
-            (x) => {
-                if (pageType === 'search') {
-                    return filterByText(x, query);
-                } else {
-                    maxPage(Math.ceil(filtered.length / config().entries_per_page) - 1);
-                    return x;
-                };
-            },
-            (x) => {
-                // On error return a empty post list.
-                return [];
-            }
-        );
-    });
-    return { pageType, id, posts, page, maxPage, tag, query, searchQueryInput,
-            setDocumentTitle: true };
-};
-
-App.view = function (ctrl) {
+// Format the whole document.body for the blog and optionally update
+// document.title.
+const blogView = ({error, maxPage, pageType, page, posts, query,
+                   searchQueryInput, setDocumentTitle, tag}) => {
+    window.scrollTo(0, 0);
     let content = null;
-    let error = true;
-    if (ctrl.posts().length > 0) {
-        error = false;
-        content = ctrl.posts().map(postView);
-    } else if (ctrl.pageType === 'id') {
-        content = [errorView({message: loc().entry_not_found})];
+
+    if (error) {
+        if (pageType === 'post') {
+            content = [errorView(loc().entry_not_found)];
+        } else {
+            content = [errorView(loc().no_matches)];
+        }
     } else {
-        content = [errorView({message: loc().no_matches})];
+        posts = posts || [];
+        content = posts.map(postView);
     };
 
-    let sep = ' | ';
-    let withSeparator = function(s) {
+    // Update the document title.
+    const sep = ' | ';
+    const withSeparator = function(s) {
         return s === '' ? '' : s + sep;
     };
 
-    if (ctrl.setDocumentTitle) {
+    if (setDocumentTitle) {
         let title = '';
-        if (ctrl.pageType === 'tag') {
-            title = loc().tag_title.replace(/%s/, ctrl.tag);
-        } else if (ctrl.pageType === 'search') {
-            title = loc().search_title.replace(/%s/, ctrl.query);
-        } else if (!error && (ctrl.pageType === 'id')) {
-            title = stripTags(ctrl.posts()[0].title());
+        if (pageType === 'tag') {
+            title = loc().tag_title.replace(/%s/, tag);
+        } else if (pageType === 'search') {
+            title = loc().search_title.replace(/%s/, query);
+        } else if (!error && (pageType === 'post') && (posts.length > 0)) {
+            title = stripTags(posts[0].title);
         };
-        if (ctrl.page > 0) {
-            title = withSeparator(title) + loc().page.replace(/%s/, ctrl.page);
+        if (page > 0) {
+            title = withSeparator(title) + loc().page.replace(/%s/, page);
         };
         title = withSeparator(title) + config().title;
         document.title = title;
@@ -406,36 +435,137 @@ App.view = function (ctrl) {
 
     return pageView({
         content,
-        pageType: ctrl.pageType,
-        page: ctrl.page,
-        maxPage: ctrl.maxPage(),
-        tag: ctrl.tag,
-        query: ctrl.query,
-        searchQueryInput: ctrl.searchQueryInput
+        maxPage,
+        page,
+        query,
+        searchQueryInput,
+        tag,
     });
 };
 
-// Download the config and the localization then set up routing.
+
+/*
+ * Components
+ */
+
+let Timeline = {
+    oninit(vnode) {
+        vnode.state.error = false;
+        vnode.state.page = +vnode.attrs.page || 0;
+        vnode.state.tag = vnode.attrs.tag || null;
+        vnode.state.pageType = vnode.state.tag === null ? 'timeline' : 'tag';
+
+        const key = 'timeline:page=' + vnode.state.page +
+                    (vnode.attrs.tag === null ? '' : 'tag=' + vnode.state.tag);
+        m.route.set(m.route.get(), null, {state: {key}});
+
+        return PostList.fetch(postList().baseUrl).then(postList).then(() => {
+            const {data, maxPage} =
+                postList().page(vnode.state.page, vnode.state.tag);
+            vnode.state.maxPage = maxPage;
+            return data;
+        }).then((posts) => {
+            vnode.state.error = vnode.state.page > vnode.state.maxPage ||
+                                posts.length === 0;
+            vnode.state.posts = posts;
+        });
+    },
+
+    view(vnode) {
+        return blogView({
+            error: vnode.state.error,
+            maxPage: vnode.state.maxPage,
+            page: vnode.state.page,
+            pageType: vnode.state.pageType,
+            posts: vnode.state.posts,
+            query: vnode.state.query,
+            searchQueryInput,
+            setDocumentTitle: true,
+            tag: vnode.state.tag,
+        });
+    }
+};
+
+let SinglePost = {
+    oninit(vnode) {
+        vnode.state.error = false;
+        vnode.state.pageType = 'post';
+
+        const filename = vnode.attrs.id + '.xml';
+        const key = 'post:filename=' + filename;
+        m.route.set(m.route.get(), null, {state: {key}});
+
+        return PostList.fetch(postList().baseUrl).then(postList).then(() => {
+            return postList().postByFilename(filename);
+        }).then((post) => {
+            vnode.state.posts = [post];
+        }, (error) => {
+            vnode.state.error = true;
+            vnode.state.posts = [];
+        });
+    },
+
+    view(vnode) {
+        return Timeline.view(vnode);
+    }
+};
+
+let Search = {
+    oninit(vnode) {
+        vnode.state.error = false;
+        vnode.state.pageType = 'search';
+        vnode.state.query = vnode.attrs.query || '';
+
+        const key = 'search:query=' + vnode.state.query;
+        m.route.set(m.route.get(), null, {state: {key}});
+
+        return PostList.fetch(postList().baseUrl).then(postList).then(() => {
+            return postList().search(vnode.state.query);
+        }).then((posts) => {
+            vnode.state.error = posts.length === 0;
+            vnode.state.posts = posts;
+        });
+    },
+
+    view(vnode) {
+        return Timeline.view(vnode);
+    }
+};
+
+
+/*
+ * Initialization
+ */
+
+// Download the config, the localization and the post list then set up routing.
 m.request({url: 'drukkar.json'})
     .then(config)
     .then(() => {
         // Apply the theme.
-        document.getElementById('page_style').href = config().base_location +
-            config().themes_dir + config().theme + '/blog.css';
+        document.getElementById('page_style').href =
+            config().base_location + config().themes_dir +
+            config().theme + '/blog.css';
 
-        RequestCache.request({
+        config.sidebar = config.sidebar ||
+                         document.getElementById('sidebar').innerHTML;
+
+        return RequestCache.request({
             method: 'GET',
             url: config().base_location + `loc_${config().locale}.json`
-        }).then(loc);
-
-        m.route.mode = 'hash';
+        });
+    })
+    .then(loc)
+    .then(() => {
+        return PostList.fetch(config().base_location + config().entries_dir);
+    })
+    .then(postList)
+    .then(() => {
         m.route(document.body, '/', {
-            '/:id': App,
-            '/': App,
-            '/page/:page': App,
-            '/tag/:tag': App,
-            '/tag/:tag/page/:page': App,
-            '/search/:query': App,
-            '/search/:query/page/:page': App
+            '/:id': SinglePost,
+            '/': Timeline,
+            '/page/:page': Timeline,
+            '/tag/:tag': Timeline,
+            '/tag/:tag/page/:page': Timeline,
+            '/search/:query': Search,
         });
     });

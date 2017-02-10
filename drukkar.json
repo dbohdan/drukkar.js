@@ -19,9 +19,9 @@
   "navbar_enabled": true,
   "sidebar_enabled": true,
   "navbar_links": [
-    {"href": "#", "text": "Home"},
-    {"href": "#/1-manual", "text": "Manual"},
-    {"href": "#/0-changelog", "text": "Changelog"}
+    {"href": "#!/", "text": "Home"},
+    {"href": "#!/1-manual", "text": "Manual"},
+    {"href": "#!/0-changelog", "text": "Changelog"}
   ],
 
   "show_dates": true,
