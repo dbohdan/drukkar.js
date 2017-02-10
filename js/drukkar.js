@@ -457,7 +457,7 @@ var Timeline = {
             vnode.state.maxPage = maxPage;
             return data;
         }).then(function (posts) {
-            vnode.state.error = vnode.state.page > vnode.state.maxPage || posts.length === 0;
+            vnode.state.error = vnode.state.page < 0 || vnode.state.page > vnode.state.maxPage || posts.length === 0;
             vnode.state.posts = posts;
         });
     },
