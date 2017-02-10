@@ -1,4 +1,4 @@
-**Drukkar.js** is an experiment to make a client-side JavaScript-based flat file blog engine that is compatible with [Drukkar](http://drukkar.sourceforge.net/). It is completely compatible with Drukkar's blog post files and attempts to have a configuration format identical to Drukkar's `config.xml` except where it does not make sense. It is currently a prototype.
+**Drukkar.js** is an experiment to make a client-side JavaScript-based blog engine compatible with [Drukkar](http://drukkar.sourceforge.net/). It is fully compatible with Drukkar's blog post files and attempts to have a configuration file format identical to Drukkar's `config.xml` except where it doesn't make sense. It only needs an HTTP server serving static files as a back end.
 
 Live demo
 =========
