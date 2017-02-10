@@ -25,7 +25,11 @@ Changes from Drukkar
 
 * The configuration file is called `drukkar.json`. It uses JSON instead of XML.
 * Rather than [PHP date formatting](http://php.net/manual/en/function.date.php) Drukkar.js uses Moment.js [formatting](http://momentjs.com/docs/#/displaying/format/) and [UTC offset](http://momentjs.com/docs/#/manipulating/utc-offset/) (time zone) syntax.
-* New settings in the config file: `"navbar_links"`, `"refresh_interval"` and `"themes_dir"`. When the user navigates to a blog post that was last fetched more than N seconds ago Drukkar.js will try to reload its content from the server. The value of N is set in `"refresh_interval"` and is 60 by default. The value of `"navbar_links"` determines the hyperlinks in the blog's navbar. It is an array where each element is an object with two members: `"href"` for the link's destination and `"text"` for the link's text. Finally, `"themes_dir"` tells Drukkar.js where relative to the `"base_location"` path the theme files are located.
+* New settings in the config file: `"navbar_links"`, `"refresh_interval"`, `"sidebar"` and `"themes_dir"`.
+ * When the user navigates to a blog post that was last fetched more than *N* seconds ago Drukkar.js will try to reload its content from the server. The value of *N* is set in `"refresh_interval"` and is 60 by default.
+ * `"navbar_links"` determines the hyperlinks in the blog's navbar. It is an array where each element is an object with two members: `"href"` for the link's destination and `"text"` for the link's text.
+ * If the key `"sidebar"` is present, its value is treated as HTML and used as the contents of the sidebar. If it is absent, the sidebar will contain the children of the element `#sidebar` in `index.html`.
+ * `"themes_dir"` tells Drukkar.js where relative to the `"base_location"` path the theme files are located.
 * The setting `"entries_per_page_for_tags_and_search"` has been removed. The value of `"entries_per_page"` is used when browsing posts by tag. Search returns every post that matches the search query.
 
 License
