@@ -1,6 +1,6 @@
 {
   "name": "drukkar",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "A JavaScript viewer for Drukkar blog posts.",
   "homepage": "https://github.com/dbohdan/drukkar.js",
   "license": "MIT",
@@ -26,6 +26,7 @@
     "url": "https://github.com/dbohdan/drukkar.js.git"
   },
   "dependencies": {
+    "immutable": "^3.8.1",
     "marked": "^0.3.6",
     "mithril": "^1.0.0",
     "moment": "^2.17.1"

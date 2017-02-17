@@ -5,6 +5,8 @@
  * Modules
  */
 
+require('core-js/fn/object/assign');
+const Immutable = require('immutable');
 const m = require('mithril');
 const marked = require('marked');
 const moment = require('moment');
@@ -24,7 +26,7 @@ const loc = Stream({});
 const postList = Stream({});
 // The search query input. Preserved when switching components.
 const searchQueryInput = Stream('');
-const version = '0.6.0';
+const version = '0.7.0';
 
 
 /*
@@ -104,20 +106,17 @@ const RequestCache = {
  * Post - the blog entry model
  */
 
-class Post {
-    constructor(data) {
-        data = data || {};
-        this.filename = data.filename || '';
-        this.title = data.title || '';
-        this.text = data.text || '';
-        this.format = data.format || 'html';
-        this.files = data.files || [];
-        this.date = data.date || '0';
+class Post extends Immutable.Record({filename: '', title: '', text: '',
+                                     format: 'html', files: [], date: 0,
+                                     tags: [], stub: false}) {
+    constructor(data={}) {
         if (config().entry_date_from_file_name) {
-            const datePrefix = this.filename.split(/-/)[0];
-            this.date(moment.utc(datePrefix, 'YYYYMMDDHHmmss').unix());
+            const datePrefix = data.filename.split(/-/)[0];
+            data = Object.assign({}, data, {
+                date: moment.utc(datePrefix, 'YYYYMMDDHHmmss').unix(),
+            });
         };
-        this.tags = data.tags || [];
+        return super(data);
     };
 
     // Load a Post from url. Returns an m.request.
@@ -159,21 +158,12 @@ class Post {
 
 
 /*
- * PostList - a lazy loaded post collection
+ * PostList - a post stub collection that fetches full posts on demand
  */
 
-class PostList {
-    constructor({baseUrl, posts}) {
-        this.baseUrl = baseUrl;
-        this.posts = posts;
-        this._reindex();
-    };
-
-    _reindex() {
-        this.index = {};
-        for (let i = 0; i < this.posts.length; i++) {
-            this.index[this.posts[i].filename] = i;
-        };
+class PostList extends Immutable.Record({baseUrl: '', posts: [], index: []}) {
+    constructor({baseUrl, posts, index}) {
+        super({baseUrl, posts, index: index || PostList.makeIndex(posts)});
     };
 
     filter(tag=null, withExcluded=false) {
@@ -193,12 +183,7 @@ class PostList {
         if (index < 0 || index >= this.posts.length) {
             return Promise.reject('wrong index');
         }
-        return Post.fetch(this.baseUrl + this.posts[index].filename).then(
-            (x) => {
-                this.posts[index] = x;
-                return x;
-            }
-        );
+        return Post.fetch(this.baseUrl + this.posts[index].filename);
     };
 
     page(n, tag=null) {
@@ -257,6 +242,14 @@ class PostList {
             type: PostList,
             url: baseUrl + 'entries.json',
         });
+    };
+
+    static makeIndex(posts) {
+        const index = {};
+        for (let i = 0; i < posts.length; i++) {
+            index[posts[i].filename] = i;
+        };
+        return index;
     };
 };
 
