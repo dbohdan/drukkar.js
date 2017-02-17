@@ -426,7 +426,7 @@ const blogView = ({error, maxPage, pageType, page, posts, query,
             title = stripTags(posts[0].title);
         };
         if (page > 0) {
-            title = withSeparator(title) + loc().page.replace(/%s/, page);
+            title = withSeparator(title) + loc().page.replace(/%s/, page + 1);
         };
         title = withSeparator(title) + config().title;
         document.title = title;
