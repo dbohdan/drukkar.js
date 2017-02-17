@@ -172,12 +172,11 @@ class PostList extends Immutable.Record({baseUrl: '', posts: [], index: []}) {
         super({baseUrl, posts, index: index || PostList.makeIndex(posts)});
     };
 
-    filter(tag=null, withExcluded=false) {
-        return this.posts.filter((post) => {
-            return (post.tags.indexOf('_hidden') === -1) &&
-                   (withExcluded || (post.tags.indexOf('_excluded') === -1)) &&
-                   ((tag === null) || post.tags.indexOf(tag) > -1);
-        });
+    fetchFullPost(index) {
+        if (index < 0 || index >= this.posts.length) {
+            return Promise.reject('wrong index');
+        }
+        return Post.fetch(this.baseUrl + this.posts[index].filename);
     };
 
     filenameToIndex(filename, appendExt=false) {
@@ -185,11 +184,12 @@ class PostList extends Immutable.Record({baseUrl: '', posts: [], index: []}) {
         return key in this.index ? this.index[key] : -1;
     };
 
-    loadFullPost(index) {
-        if (index < 0 || index >= this.posts.length) {
-            return Promise.reject('wrong index');
-        }
-        return Post.fetch(this.baseUrl + this.posts[index].filename);
+    filter(tag=null, withExcluded=false) {
+        return this.posts.filter((post) => {
+            return (post.tags.indexOf('_hidden') === -1) &&
+                   (withExcluded || (post.tags.indexOf('_excluded') === -1)) &&
+                   ((tag === null) || post.tags.indexOf(tag) > -1);
+        });
     };
 
     page(n, tag=null) {
@@ -200,20 +200,20 @@ class PostList extends Immutable.Record({baseUrl: '', posts: [], index: []}) {
         const maxPage =
             Math.ceil(filtered.length / config().entries_per_page) - 1;
         const data = Promise.all(filtered.slice(from, to).map((post) => {
-            return this.loadFullPost(this.filenameToIndex(post.filename));
+            return this.fetchFullPost(this.filenameToIndex(post.filename));
         }));
         return {data, maxPage};
     };
 
     postByFilename(filename) {
-        return this.loadFullPost(this.filenameToIndex(filename));
+        return this.fetchFullPost(this.filenameToIndex(filename));
     };
 
     // Full text search.
     search(query=null) {
         let promises = [];
         for (let i = 0; i < this.posts.length; i++) {
-            promises.push(this.loadFullPost(i));
+            promises.push(this.fetchFullPost(i));
         };
 
         return Promise.all(promises).then((posts) => {
