@@ -9,7 +9,9 @@
 
   "theme": "flat",
   "entries_per_page": 2,
+
   "refresh_interval": 60,
+  "cache_bust": false,
 
   "locale": "en",
   "date_format": "DD/MM/YYYY HH:mm:ss",
@@ -25,7 +27,5 @@
   ],
 
   "show_dates": true,
-  "time_zone": "UTC",
-
-  "cache_bust": false
+  "time_zone": "UTC"
 }
