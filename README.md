@@ -25,8 +25,9 @@ Changes from Drukkar
 
 * The configuration file is called `drukkar.json`. It uses JSON instead of XML.
 * Rather than [PHP date formatting](http://php.net/manual/en/function.date.php) Drukkar.js uses Moment.js [formatting](http://momentjs.com/docs/#/displaying/format/) and [UTC offset](http://momentjs.com/docs/#/manipulating/utc-offset/) (time zone) syntax.
-* New settings in the config file: `"navbar_links"`, `"refresh_interval"`, `"sidebar"` and `"themes_dir"`.
- * When the user navigates to a blog post that was last fetched more than *N* seconds ago Drukkar.js will try to reload its content from the server. The value of *N* is set in `"refresh_interval"` and is 60 by default.
+* New settings in the config file: `"cache_bust"`, `"navbar_links"`, `"refresh_interval"`, `"sidebar"` and `"themes_dir"`.
+ * If `"cache_bust"` is set to `true`, Drukkar.js will attempt to bypass browser caching for the entry list and the individual entry files it requests from the server by appending `?cache=<unique number>` to their URLs. See [What is Cache Busting?](https://www.keycdn.com/support/what-is-cache-busting/).
+ * When the value of `"refresh_interval"` is set to *N*, Drukkar.js will try to reload the relevant blog entries and/or the blog entry list from the server if they were last fetched more than *N* seconds ago when the user navigates to a new blog page. The value is 60 by default.
  * `"navbar_links"` determines the hyperlinks in the blog's navbar. It is an array where each element is an object with two members: `"href"` for the link's destination and `"text"` for the link's text.
  * If the key `"sidebar"` is present, its value is treated as HTML and used as the contents of the sidebar. If it is absent, the sidebar will contain the children of the element `#sidebar` in `index.html`.
  * `"themes_dir"` tells Drukkar.js where relative to the `"base_location"` path the theme files are located.

@@ -25,5 +25,7 @@
   ],
 
   "show_dates": true,
-  "time_zone": "UTC"
+  "time_zone": "UTC",
+
+  "cache_bust": false
 }

@@ -84,10 +84,16 @@ const RequestCache = {
     // Return a cached version of an m.request with the parameters in data if
     // the cache is fresh (no older than config().refresh_interval seconds);
     // otherwise, make a new request and return it.
-    request(data) {
+    request(data, cacheBust=false) {
         const now = Date.now();
         // Note that we do not cache functions.
         const key = JSON.stringify(data);
+
+        if (cacheBust) {
+            data = Object.assign({}, data, {
+                url: data.url + `?cache=${Date.now()}`
+            });
+        };
 
         if (!isDefined(this.cache[key]) || now - this.cache[key].updated >
                                            config().refresh_interval * 1000) {
@@ -152,7 +158,7 @@ class Post extends Immutable.Record({filename: '', title: '', text: '',
             method: 'GET',
             type: Post,
             url: url,
-        });
+        }, config().cache_bust);
     };
 };
 
@@ -241,7 +247,7 @@ class PostList extends Immutable.Record({baseUrl: '', posts: [], index: []}) {
             method: 'GET',
             type: PostList,
             url: baseUrl + 'entries.json',
-        });
+        }, config().cache_bust);
     };
 
     static makeIndex(posts) {

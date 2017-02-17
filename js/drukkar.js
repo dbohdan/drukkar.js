@@ -86,9 +86,17 @@ var RequestCache = {
     // the cache is fresh (no older than config().refresh_interval seconds);
     // otherwise, make a new request and return it.
     request: function request(data) {
+        var cacheBust = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
         var now = Date.now();
         // Note that we do not cache functions.
         var key = JSON.stringify(data);
+
+        if (cacheBust) {
+            data = Object.assign({}, data, {
+                url: data.url + ('?cache=' + Date.now())
+            });
+        };
 
         if (!isDefined(this.cache[key]) || now - this.cache[key].updated > config().refresh_interval * 1000) {
             this.cache[key] = {
@@ -162,7 +170,7 @@ var Post = function (_Immutable$Record) {
                 method: 'GET',
                 type: Post,
                 url: url
-            });
+            }, config().cache_bust);
         }
     }]);
 
@@ -174,7 +182,7 @@ var Post = function (_Immutable$Record) {
 ;
 
 /*
- * PostList - a post stub collection that fetches full posts on demand 
+ * PostList - a post stub collection that fetches full posts on demand
  */
 
 var PostList = function (_Immutable$Record2) {
@@ -275,7 +283,7 @@ var PostList = function (_Immutable$Record2) {
                 method: 'GET',
                 type: PostList,
                 url: baseUrl + 'entries.json'
-            });
+            }, config().cache_bust);
         }
     }, {
         key: 'makeIndex',
