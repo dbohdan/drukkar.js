@@ -32,11 +32,11 @@
     "moment": "^2.17.1"
   },
   "devDependencies": {
-    "babel-preset-es2015": "latest",
-    "babelify": "latest",
-    "browserify": "latest",
-    "uglifyify": "latest",
-    "watchify": "latest"
+    "babel-preset-es2015": "^6.22.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.1.0",
+    "uglifyify": "^3.0.4",
+    "watchify": "^3.9.0"
   },
   "scripts": {
     "build-js-dev": "browserify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ]",
