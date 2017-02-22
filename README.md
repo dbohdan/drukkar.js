@@ -1,4 +1,4 @@
-[![Build status](https://travis-ci.org/dbohdan/drukkar.js.svg?branch=master)](https://travis-ci.org/dbohdan/drukkar.js)
+[![Build status](https://travis-ci.org/dbohdan/drukkar.js.svg?branch=gh-pages)](https://travis-ci.org/dbohdan/drukkar.js)
 
 **Drukkar.js** is an experiment to make a client-side JavaScript-based blog engine compatible with [Drukkar](http://drukkar.sourceforge.net/). It is fully compatible with Drukkar's blog post files and attempts to have a configuration file format identical to Drukkar's `config.xml` except where it doesn't make sense. It only needs an HTTP server serving static files as a back end.
 
