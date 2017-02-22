@@ -57,6 +57,7 @@ describe('User visits a timeline page', () => {
         return nm
             .wait(postTitles)
             .click('.blogentry:nth-child(1) > .entrytitle > .titlelink')
+            .wait(100) // Hack!
             .wait(postTitles)
             .title()
             .then((x) => assert.equal(x, 'Welcome to Drukkar' +
