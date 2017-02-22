@@ -2,12 +2,12 @@ const Nightmare = require('nightmare');
 const assert = require('chai').assert;
 
 const baseUrl = 'http://localhost:8080/drukkar.js/';
-const opts = {show: true};
+const defaultOpts = {show: false};
 const postTitles = '.blogentry > .entrytitle > .titlelink';
 
 
 const start = (subpath='', extraOpts={}) => {
-    return Nightmare(Object.assign({}, opts, extraOpts))
+    return Nightmare(Object.assign({}, defaultOpts, extraOpts))
         .goto(baseUrl + subpath)
 };
 
