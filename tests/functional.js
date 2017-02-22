@@ -60,6 +60,7 @@ describe('User visits a timeline page', () => {
             .wait(100) // Hack!
             .wait(postTitles)
             .title()
+            .end()
             .then((x) => assert.equal(x, 'Welcome to Drukkar' +
                                       ' | Blog title here'));
     });
@@ -71,6 +72,7 @@ describe('User visits a timeline page', () => {
             .click('.blogentry:nth-child(2) > .tags > a:nth-child(1)')
             .wait(postTitles)
             .title()
+            .end()
             .then((x) => assert.equal(x, "Posts tagged 'hello'" +
                                       ' | Blog title here'));
     });
@@ -99,10 +101,11 @@ describe('User visits a timeline page', () => {
     });
 });
 
-const assertChangelogPost = (nm) => {
+const assertShowingChangelogPost = (nm) => {
     return nm
         .wait(postTitles)
         .text('.text')
+        .end()
         .then((x) => {
             assert.match(x[0], new RegExp(
                 '^\n  2.0.0:\n    The big change this release is'
@@ -113,20 +116,20 @@ const assertChangelogPost = (nm) => {
 describe('User visits a post page', () => {
     it('should display the post', () => {
         const nm = start('#!/0-changelog');
-        return assertChangelogPost(nm);
+        return assertShowingChangelogPost(nm);
     });
 });
 
 describe('User visits a tag page', () => {
     it('should display posts with the tag', () => {
         const nm = start('#!/tag/changelog');
-        return assertChangelogPost(nm);
+        return assertShowingChangelogPost(nm);
     });
 });
 
 describe('User visits a search page', () => {
     it('should display posts matching the query', () => {
         const nm = start('#!/search/changelog');
-        return assertChangelogPost(nm);
+        return assertShowingChangelogPost(nm);
     });
 });
