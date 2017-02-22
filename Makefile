@@ -4,7 +4,9 @@ build-dev:
 	npm run build-js-dev
 build-prod:
 	npm run build-js-prod
-watch:
-	npm run watch-js
 posts:
 	./make-post-list.py entries/
+test:
+	npm test
+watch:
+	npm run watch-js

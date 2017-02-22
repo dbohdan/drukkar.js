@@ -1,7 +1,7 @@
 {
   "name": "drukkar",
   "version": "0.7.0",
-  "description": "A JavaScript viewer for Drukkar blog posts.",
+  "description": "A JavaScript client-side implementation of the Drukkar blog engine.",
   "homepage": "https://github.com/dbohdan/drukkar.js",
   "license": "MIT",
   "author": {
@@ -35,12 +35,16 @@
     "babel-preset-es2015": "^6.22.0",
     "babelify": "^7.3.0",
     "browserify": "^14.1.0",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "nightmare": "^2.9.1",
     "uglifyify": "^3.0.4",
     "watchify": "^3.9.0"
   },
   "scripts": {
     "build-js-dev": "browserify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ]",
     "build-js-prod": "browserify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ] -g uglifyify",
+    "test": "mocha --timeout 10000 tests/*.js",
     "watch-js": "watchify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ] -v"
   }
 }

@@ -1,0 +1,7 @@
+:8080/drukkar.js {
+    errors stderr
+    header / Cache-Control no-cache
+    log / stdout "{combined}"
+    root .
+    tls off
+}
