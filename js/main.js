@@ -546,8 +546,8 @@ m.request({url: 'drukkar.json'})
             config().base_location + config().themes_dir +
             config().theme + '/blog.css';
 
-        config.sidebar = config.sidebar ||
-                         document.getElementById('sidebar').innerHTML;
+        config().sidebar = config().sidebar ||
+                           document.getElementById('sidebar').innerHTML;
 
         return RequestCache.request({
             method: 'GET',
