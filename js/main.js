@@ -95,15 +95,13 @@ const RequestCache = {
             });
         };
 
-        if (!isDefined(this.cache[key]) || now - this.cache[key].updated >
-                                           config().refresh_interval * 1000) {
-            this.cache[key] = {
-                updated: now,
-                request: m.request(data),
-            };
+        if (!isDefined(this.cache[key])) {
+            this.cache[key] = m.request(data);
+            setTimeout(() => delete this.cache[key],
+                       config().refresh_interval * 1000);
         };
 
-        return this.cache[key].request;
+        return this.cache[key];
     }
 };
 
