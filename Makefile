@@ -1,12 +1,12 @@
 default: build-prod
 
 build-dev:
-	npm run build-js-dev
+	yarn build-js-dev
 build-prod:
-	npm run build-js-prod
+	yarn build-js-prod
 posts:
 	./make-post-list.py entries/
 test:
-	npm test
+	yarn test
 watch:
-	npm run watch-js
+	yarn watch-js
