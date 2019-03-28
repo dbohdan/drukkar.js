@@ -32,19 +32,25 @@
     "moment": "^2.17.1"
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.22.0",
-    "babelify": "^7.3.0",
-    "browserify": "^14.1.0",
-    "chai": "^3.5.0",
-    "mocha": "^3.2.0",
-    "nightmare": "^2.9.1",
-    "uglifyify": "^3.0.4",
-    "watchify": "^3.9.0"
+    "@babel/core": "^7.4.0",
+    "@babel/polyfill": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
+    "nightmare": "^3.0.1",
+    "uglifyify": "^5.0.1",
+    "watchify": "^3.11.1"
+  },
+  "browserslist": "> 0.25%, not dead",
+  "resolutions": {
+    "electron-download": "4.1.0"
   },
   "scripts": {
-    "build-js-dev": "browserify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ]",
-    "build-js-prod": "browserify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ] -g uglifyify",
+    "build-js-dev": "browserify js/main.js -o js/drukkar.js -t [ babelify --presets [ @babel/preset-env ] ]",
+    "build-js-prod": "browserify js/main.js -o js/drukkar.js -t [ babelify --presets [ @babel/preset-env ] ] -g uglifyify",
     "test": "mocha --timeout 10000 tests/*.js",
-    "watch-js": "watchify js/main.js -o js/drukkar.js -t [ babelify --presets [ es2015 ] ] -v"
+    "watch-js": "watchify js/main.js -o js/drukkar.js -t [ babelify --presets [ @babel/preset-env ] ] -v"
   }
 }
