@@ -70,6 +70,7 @@ describe('User visits a timeline page', () => {
         return nm
             .wait(postTitles)
             .click('.blogentry:nth-child(2) > .tags > a:nth-child(1)')
+            .wait(100) // Hack!
             .wait(postTitles)
             .title()
             .end()

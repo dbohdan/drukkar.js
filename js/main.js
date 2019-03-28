@@ -26,7 +26,7 @@ const loc = Stream({});
 const postList = Stream({});
 // The search query input. Preserved when switching components.
 const searchQueryInput = Stream('');
-const version = '0.7.0';
+const version = '0.8.0';
 
 
 /*
@@ -332,9 +332,9 @@ const pageView = ({content, maxPage, page, pageType, query,
                         m('input#searchfield[type="text"][name="search"]' +
                           '[id="searchfield"][size="50"]', {
                             value: searchQueryInput(),
-                            onchange: m.withAttr('value', (value) => {
-                                searchQueryInput(value);
-                            }),
+                            onchange: (e) => {
+                                searchQueryInput(e.target.value);
+                            },
                         }),
                         m.trust('&nbsp'),
                         m('input.button#searchbutton[type="submit"]', {
